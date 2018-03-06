@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO single room demo</title>
+    <style>
+      .main {
+        display: flex;
+      }
+      #user-list {
+        width: 150px;
+      }
+      #chat-list {
+        height: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <input type="text" id="Uname" placeholder="请输入你的用户名" />
+      <button id="btn1">确定</button>
+    </div>
+    <div class="main">
+      <ul id="user-list">
+
+      </ul>
+      <div>
+        <div id="chat-list"></div>
+        <input type="text" id="message" placeholder="请输入消息内容">
+        <button id="send">发送消息</button>
+      </div>
+    </div>
+  </body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
+    var message='';
+    document.getElementById('btn1').addEventListener('click', function(){
+      // 客户端发adduser 事件给服务端 确定当前 用户名
+      socket.emit('adduser', document.getElementById('Uname').value);
+    })
+    // 客户端发聊天内容
+    document.getElementById('send').addEventListener('click', function(){
+      socket.emit('sendchat', document.getElementById('message').value);
+    })
+    // 用户登录和退出的事件
+    socket.on('updateuser', function(usernames) {
+      var item = '';
+      var str = '';
+
+      for (var i in usernames) {
+        str += '<li>'+i+'</li>';
+      }
+      document.getElementById('user-list').innerHTML=str
+    })
+    socket.on('updatechat', function(uname, data) {
+      // 打开多个客户端时 sender(当前客户端)以外的客户端 未输入用户名也可以看到消息记录
+      // 但在其客户端因未添加adduser事件,  服务端没有其socket.uname的状态, 无法识别其客户端状态(用户名等)
+      console.log('uname', uname);
+      if (uname) {
+        message += ('<p>' + uname + data + '</p>');
+        document.getElementById('chat-list').innerHTML = message;
+      } else {
+        alert('请先输入您的用户名')
+      }
+
+    })
+
+  </script>
+</html>
