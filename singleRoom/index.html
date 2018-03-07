@@ -18,11 +18,13 @@
     <div>
       <input type="text" id="Uname" placeholder="请输入你的用户名" />
       <button id="btn1">确定</button>
+      <div id="welcome">请先输入用户名</div>
     </div>
     <div class="main">
-      <ul id="user-list">
-
-      </ul>
+      <div>
+        <div>所有用户列表</div>
+        <ul id="user-list"></ul>
+      </div>
       <div>
         <div id="chat-list"></div>
         <input type="text" id="message" placeholder="请输入消息内容">
@@ -34,13 +36,25 @@
   <script>
     var socket = io();
     var message='';
+    var clientname = ''; // 保存客户端的登录状态, 若用户没有输入过用户名 发送消息时提示请新输入用户名
     document.getElementById('btn1').addEventListener('click', function(){
       // 客户端发adduser 事件给服务端 确定当前 用户名
-      socket.emit('adduser', document.getElementById('Uname').value);
+      socket.emit('adduser', document.getElementById('Uname').value, function(data) {
+        document.getElementById('Uname').setAttribute('disabled', 'disabled');
+        console.log('data', data);
+      });
+      clientname = document.getElementById('Uname').value;
+      if (clientname) {
+        document.getElementById('welcome').innerHTML = '欢迎你 用户:' + clientname;
+      }
     })
     // 客户端发聊天内容
     document.getElementById('send').addEventListener('click', function(){
-      socket.emit('sendchat', document.getElementById('message').value);
+      if (clientname) {
+        socket.emit('sendchat', document.getElementById('message').value);
+      } else {
+        alert('请先输入用户名');
+      }
     })
     // 用户登录和退出的事件
     socket.on('updateuser', function(usernames) {
@@ -55,14 +69,10 @@
     socket.on('updatechat', function(uname, data) {
       // 打开多个客户端时 sender(当前客户端)以外的客户端 未输入用户名也可以看到消息记录
       // 但在其客户端因未添加adduser事件,  服务端没有其socket.uname的状态, 无法识别其客户端状态(用户名等)
+      // 解决方法暂时 在客户端添加clientname 区别用户是否添加过adduser事件
       console.log('uname', uname);
-      if (uname) {
-        message += ('<p>' + uname + data + '</p>');
-        document.getElementById('chat-list').innerHTML = message;
-      } else {
-        alert('请先输入您的用户名')
-      }
-
+      message += ('<p>' + uname + data + '</p>');
+      document.getElementById('chat-list').innerHTML = message;
     })
 
   </script>
