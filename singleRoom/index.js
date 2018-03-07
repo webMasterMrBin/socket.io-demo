@@ -9,7 +9,7 @@ app.get('/', (req, res) => {
 var usernames = {};
 
 io.on('connection', (socket) => {
-  socket.on('adduser',  (uname) => {
+  socket.on('adduser',  (uname, fn) => {
     // 返回所有客户端 添加的用户名列表
     usernames[uname] = uname;
     // 当前客户端连接的用户名
@@ -19,6 +19,7 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('updatechat', 'server:', `${uname} has connected`);
     // 在客户端发送添加用户名事件后, 服务端向当前客户端(只发给sender) 你已连接
     socket.emit('updatechat', 'server:', `you has connected`);
+    fn('server callback value');
   })
 
   socket.on('sendchat', (message) => {
