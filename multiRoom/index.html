@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO single room demo</title>
+    <style>
+      .main {
+        display: flex;
+      }
+      .rooms {
+        height: 300px;
+        width: 100px;
+        border-right: 1px solid #000;
+      }
+      .active {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <input type="text" id="uname" />
+    <button id="btn">确定</button>
+    <div class="main">
+      <ul class="rooms">
+        <li class="active">room1</li>
+        <li>room2</li>
+        <li>room3</li>
+      </ul>
+      <div>
+        <div id="zoom"></div>
+        <div>
+          <input type="text" id="message" />
+          <button id="send">发送</button>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
+    var str = '';
+    document.getElementById('btn').addEventListener('click', function(){
+      console.log(document.getElementById('uname').value);
+      // 添加完用户名后d 默认加入room1
+      socket.emit('adduser', document.getElementById('uname').value);
+    })
+    socket.on('updatechat',  function(uname, data) {
+      str +=' <div>' +uname+data+ '</div>';
+      document.getElementById('zoom').innerHTML =str;
+    })
+    // 客户端发切换room动作事件
+    document.querySelectorAll('li').forEach(function(o){
+      o.onclick= function() {
+        console.log('this', this);
+        socket.emit('switchRoom', this.text);
+      }
+    })
+    // sendchat
+    document.getElementById('send').addEventListener('click', function() {
+      socket.emit('sendchat', document.getElementById('message').value);
+    })
+  </script>
+</html>
