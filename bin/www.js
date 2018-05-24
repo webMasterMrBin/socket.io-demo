@@ -10,6 +10,7 @@ const server = http.createServer(app);
 
 server.listen(4000);
 
+// TODO webpack-dev-server node api 配置
 // const options = {
 //   contentBase: path.join(__dirname, "public/build"),
 // 	hot: true,
