@@ -9,13 +9,6 @@ module.exports = {
   entry: {
 		main: './public/src/js/index.js',
   },
-  devServer: {
-    contentBase: path.join(__dirname, "public/build"),
-    hot: true,
-    proxy: {
-      '*': 'http://localhost:4000'
-    }
-  },
   output: {
     filename: '[name].js',
     path: path.join(__dirname, '/public/build'),
