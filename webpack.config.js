@@ -43,8 +43,6 @@ module.exports = {
 			React: 'react',
 			ReactDOM: 'react-dom',
 		}),
-		new webpack.NamedModulesPlugin(),
-		new webpack.HotModuleReplacementPlugin(),
 		extractLESS
   ]
 };

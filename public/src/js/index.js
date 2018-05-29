@@ -1,16 +1,18 @@
-import Login from "component/login";
-import { createStore, combineReducers, applyMiddleware } from 'redux';
-import { rootReducer } from './reducer';
-import thunk from 'redux-thunk';
-import { createLogger } from 'redux-logger';
-import promiseMiddleware from 'redux-promise';
-import { Provider } from 'react-redux';
+import Demo from "component/reduxDemo";
+import { createStore, combineReducers, applyMiddleware } from "redux";
+import { rootReducer } from "./reducer";
+import thunk from "redux-thunk";
+import { createLogger } from "redux-logger";
+import promiseMiddleware from "redux-promise";
+import { Provider } from "react-redux";
+import { reducer as formReducer } from "redux-form";
 
 const reducers = combineReducers({
-	rootReducer
+  form: formReducer,
+  rootReducer
 });
 
-const store = createStore(reducers, applyMiddleware(thunk, promiseMiddleware, createLogger()));
+const store = createStore(reducers, applyMiddleware(thunk, promiseMiddleware, createLogger({collapsed: true})));
 
 console.log("初始化 getState", store.getState());
 
@@ -22,6 +24,6 @@ const unsubscribe = store.subscribe(() =>
 
 ReactDOM.render(
 	<Provider store={store}>
-		<Login />
+		<Demo />
 	</Provider>, document.getElementById('global')
 );
