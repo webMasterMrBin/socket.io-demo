@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as action from "../action";
 import { reduxForm, Field, stopSubmit, destroy } from "redux-form";
+import { InputField } from "./public";
 
 const validate = values => {
   const error = {};
@@ -12,11 +13,6 @@ const validate = values => {
   }
 
   return error;
-}
-
-const Input = props => {
-  console.log("input props", props);
-  return <input type="text" {...props.input} />;
 }
 
 class Login extends React.Component {
@@ -31,7 +27,7 @@ class Login extends React.Component {
     const { handleSubmit, dispatch } = this.props;
     return (
       <form onSubmit={handleSubmit(v => this.props.dispatch(stopSubmit("test_login", validate(v))))}>
-        <Field normalize={v => v.toUpperCase()} name="uname" component={Input} type="text" />
+        <Field width="50%" normalize={v => v.toUpperCase()} name="uname" component={InputField} type="text" />
         <Field name="pwd" component="input" type="text" />
         <button type="submit">提交</button>
         <button type="button" onClick={() => this.props.List("发出请求", "收到请求")}>

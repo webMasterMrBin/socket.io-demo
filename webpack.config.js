@@ -20,6 +20,10 @@ module.exports = {
         loader: 'babel-loader',
       },
       {
+        test: /antd.*\.css$/,
+        use: ["style-loader", {loader: 'css-loader', options: {sourceMap: 1}}, "less-loader"]
+      },
+      {
         test: /\.less$/,
         use: extractLESS.extract({
             use: [{
@@ -40,6 +44,7 @@ module.exports = {
 	},
   plugins: [
 		new webpack.ProvidePlugin({
+      _: "lodash",
 			React: 'react',
 			ReactDOM: 'react-dom',
 		}),
