@@ -17,4 +17,16 @@ app.use(logger('dev'));
 // 引入路由
 require('./route')(app);
 
+// 捕获错误
+app.use((req, res, next) => {
+  // err.status = 404;
+  next(new Error("Not Found"));
+});
+
+// 错误处理
+app.use((err, req, res, next) => {
+  res.status(err.status || 500);
+  res.send("ERROR");
+});
+
 module.exports = app;
