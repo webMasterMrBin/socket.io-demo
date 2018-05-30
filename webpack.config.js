@@ -5,13 +5,15 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const extractLESS = new ExtractTextPlugin('css/[name].css');
 
 module.exports = {
-  mode: 'development',
   entry: {
 		main: './public/src/js/index.js',
+    vendor: ["react", "react-dom", "redux", "react-redux", "lodash"]
   },
   output: {
     filename: '[name].js',
     path: path.join(__dirname, '/public/build'),
+    publicPath: "./build/",
+    chunkFilename: "[id].js"
   },
   module: {
     rules: [
@@ -24,17 +26,10 @@ module.exports = {
         use: ["style-loader", {loader: 'css-loader', options: {sourceMap: 1}}, "less-loader"]
       },
       {
-        test: /\.less$/,
-        use: extractLESS.extract({
-            use: [{
-                  loader: "css-loader" // translates CSS into CommonJS
-                  }, {
-                  loader: "less-loader" // compiles Less to CSS
-                }],
-            fallback: "style-loader"
-          })
+        test: /\.less$/i,
+        use: extractLESS.extract([ 'css-loader', 'less-loader' ])
       }
-    ],
+    ]
   },
 	resolve: {
 		modules: [
@@ -48,6 +43,9 @@ module.exports = {
 			React: 'react',
 			ReactDOM: 'react-dom',
 		}),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: ["vendor", "manifest"] // 指定模块的名称
+    }),
 		extractLESS
   ]
 };
