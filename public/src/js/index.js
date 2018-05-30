@@ -6,6 +6,8 @@ import { createLogger } from "redux-logger";
 import promiseMiddleware from "redux-promise";
 import { Provider } from "react-redux";
 import { reducer as formReducer } from "redux-form";
+import { Router, browserHistory, Route } from "react-router";
+import { routes } from "./route";
 
 const reducers = combineReducers({
   form: formReducer,
@@ -24,6 +26,6 @@ const unsubscribe = store.subscribe(() =>
 
 ReactDOM.render(
 	<Provider store={store}>
-		<Demo />
+    <Router history={browserHistory} routes={routes} />
 	</Provider>, document.getElementById('global')
 );
