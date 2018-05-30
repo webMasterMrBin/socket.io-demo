@@ -5,6 +5,7 @@ import { bindActionCreators } from "redux";
 import * as action from "../action";
 import { reduxForm, Field, stopSubmit, destroy } from "redux-form";
 import { InputField } from "./public";
+require("../../less/index.less");
 
 const validate = values => {
   const error = {};
@@ -87,6 +88,7 @@ class Index extends React.Component {
         <button onClick={() => this.setState({ show: !this.state.show })}>
           隐藏输入表单
         </button>
+        {this.props.children}
       </div>
     );
   }
