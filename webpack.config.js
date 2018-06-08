@@ -15,6 +15,7 @@ module.exports = {
     publicPath: "./build/",
     chunkFilename: "[id].js"
   },
+  devtool: "source-map",
   module: {
     rules: [
       {

@@ -16,7 +16,7 @@ export function ReceivePosts(text) {
   };
 }
 
-export function List (requestText, receiveText) {
+export function List(requestText, receiveText) {
   // XXX(异步action 方案1) redux-thunk的写法 让 Action Creator能返回函数
   return (dispatch, getState) => {
     // 刚发出请求时的state
