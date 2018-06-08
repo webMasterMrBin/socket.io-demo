@@ -1,6 +1,12 @@
 {
-  "presets": ["es2015", "stage-1", "react"],
+  "presets": ["es2015", "stage-0", "react"],
   "plugins": [
+    ["transform-runtime", {
+      "helpers": false,
+      "polyfill": false,
+      "regenerator": true,
+      "moduleName": "babel-runtime"
+    }],
    ["import", { "libraryName": "antd", "libraryDirectory": "es", "style": "css" }]
- ]
+  ]
 }

@@ -1,3 +1,96 @@
+@import "./login.less";
+@import "./var.less";
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-size: 16px;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  &.icon-warn {
+    fill: @color-red;
+  }
+  &.icon-close {
+    fill: @color-gray;
+  }
+}
+// 表单错误提示
+.validate-tip {
+  display: flex;
+  align-items: center;
+  color: @color-red;
+}
+
+// 表单输入框
+.input-box {
+  margin-top: 20px;
+  height: 60px;
+  .input-field {
+    margin-bottom: 5px;
+  }
+}
+
+// WindowOpen 错误提示组件
+.u-window {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 500;
+  .cover {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    background: rgba(0, 0, 0, 0.4);
+    width: 100%;  /*宽度设置为100%，这样才能使隐藏背景层覆盖原页面*/
+    height: 100%;
+    opacity: 0.6;  /*非IE浏览器下设置透明度为60%*/
+    z-Index: 999;
+  }
+  .modal {
+    position: absolute;
+    width: 300px;
+    height: 200px;
+    top: calc(50% - 100px);
+    left: calc(50% - 150px);
+    background-color: #fff;
+    z-Index: 9999;
+    padding: 50px 0;
+    text-align: center;
+    &.animate-hidden {
+      opacity: 0;
+      transition: all .2s linear;
+    }
+    .btn-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+    }
+  }
+}
+
+// MessageOpen 操作成功提示组件
+.u-message {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  width: 200px;
+  height: 60px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+  color: @color-white;
+  font-weight: 400;
+  text-align: center;
+  line-height: 60px;
+  &.message-open {
+    top: -60px;
+    transition: top .5s;
+  }
 }

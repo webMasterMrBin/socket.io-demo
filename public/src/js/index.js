@@ -8,10 +8,14 @@ import { Provider } from "react-redux";
 import { reducer as formReducer } from "redux-form";
 import { Router, browserHistory, Route } from "react-router";
 import { routes } from "./route";
+import http from "./reducer/http";
+import home from "./reducer/home";
 
 const reducers = combineReducers({
   form: formReducer,
-  rootReducer
+  rootReducer,
+  http,
+  home
 });
 
 const store = createStore(reducers, applyMiddleware(thunk, promiseMiddleware, createLogger({collapsed: true})));
