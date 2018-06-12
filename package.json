@@ -16,6 +16,8 @@
     "caicloud-chrome-frame": "^1.4.8-haier-11",
     "caicloud-ui": "^1.12.3",
     "classnames": "^2.2.5",
+    "connect-redis": "^3.3.3",
+    "cookie-parser": "^1.4.3",
     "debug": "^3.1.0",
     "ejs": "^2.5.7",
     "express": "^4.16.3",

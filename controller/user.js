@@ -4,19 +4,14 @@ const mod = {
   register: async (req, res, next) => {
     const { userName, userPwd } = req.body;
     try {
-      const userList = await db.user.find();
-      if (userList.filter(o => userName === o.userName).length === 0) {
+      const userInfo = await db.user.findOne({ userName });
+      if (!userInfo) {
         const result = await db.user.create({ userName, userPwd });
         console.log("result", result);
-        res.json("注册成功, 请重新登录");
+        res.json({ status: 1, msg: "注册成功, 请重新登录" });
       } else {
-        res.status(500).json("注册失败, 用户名已存在");
+        res.json({ status: 0, msg: "注册失败, 用户名已存在"});
       }
-
-      /* 延时处理 */
-      // await new Promise(resolve => {
-      //   setTimeout(() => resolve("done"), 5000);
-      // });
     } catch (e) {
       res.json(e);
     }
@@ -25,17 +20,32 @@ const mod = {
   login: async (req, res, next) => {
     try {
       const { userName, userPwd } = req.body;
-      const userList = await db.user.find();
-      userList.forEach(o => {
-        if (o.userName === userName && o.userPwd === userPwd) {
-          res.json("登录成功");
+      const userInfo = await db.user.findOne({ userName });
+
+      if (
+        userInfo &&
+        Object.keys(userInfo).length !== 0 &&
+        userPwd === userInfo.userPwd
+      ) {
+        res.cookie("userName", userName, { maxAge: 300000 });
+        if (!req.session.userName) {
+          req.session.userName = userName;
+          res.json({ status: 1, msg: "第一次来这里, 欢迎"});
+        } else {
+          res.json({ status: 1, msg: `欢迎登录, 用户${req.session.userName}`});
         }
-      });
-      res.json(userList);
+      } else {
+        res.json({ status: 0, msg: "登录失败, 用户名或密码不正确"});
+      }
+
+      console.log("cookie", req.cookies);
+      console.log("req.session", req.session);
+      console.log("req.session.id", req.session.id);
     } catch (e) {
       res.json({ errMsg: e });
     }
-  }
-}
+  },
+
+};
 
 module.exports = mod;

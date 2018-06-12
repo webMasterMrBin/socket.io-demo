@@ -56,7 +56,7 @@ const ajax = (dispatch, params, options) => {
         dispatch({
           type: "WINDOW_OPEN",
           windowOpen: true,
-          errMsg: json
+          errMsg: json.msg
         });
       } else {
         // 执行请求成功的函数
