@@ -1,4 +1,5 @@
 import * as ajax from "./lib/ajax";
+import { browserHistory } from "react-router";
 
 export function Register(value) {
   return dispatch => {
@@ -10,7 +11,7 @@ export function Register(value) {
         dispatch({
           type: "MESSAGE_OPEN",
           messageOpen: true,
-          doneMsg: d
+          doneMsg: d.msg
         });
       }
     });
@@ -24,6 +25,45 @@ export function Login(value) {
       data: JSON.stringify(value),
       success: d => {
         console.log("请求结束后 返回的数据", d);
+        // 登陆成功
+        if (d.status === 1) {
+          browserHistory.replace("/");
+          dispatch({
+            type: "MESSAGE_OPEN",
+            messageOpen: true,
+            doneMsg: d.msg
+          });
+        }
+      }
+    });
+  };
+}
+
+export function Logout() {
+  return dispatch => {
+    return ajax.get(dispatch, {
+      url: "/api/logout",
+      success: d => {
+        dispatch({
+          type: "MESSAGE_OPEN",
+          messageOpen: true,
+          doneMsg: d.msg
+        });
+      }
+    });
+  };
+};
+
+export function GetId() {
+  return dispatch => {
+    return ajax.get(dispatch, {
+      url: "/api/getID",
+      success: d => {
+        dispatch({
+          type: "MESSAGE_OPEN",
+          messageOpen: true,
+          doneMsg: d
+        });
       }
     });
   };

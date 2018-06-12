@@ -4,7 +4,7 @@ import App from "component/index";
 import login from "./login";
 import NotFound from "./404";
 
-const Test = () => <div>test</div>
+const Test = () => <div>test</div>;
 
 const routes = [
   {
@@ -12,7 +12,7 @@ const routes = [
     component: App,
     indexRoute: {
       component: Test
-    },
+    }
   },
   login,
   NotFound

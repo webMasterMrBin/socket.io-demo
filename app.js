@@ -1,6 +1,9 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
+const redisStore = require("connect-redis")(session);
 
 const app = express();
 const logger = require('morgan');
@@ -17,6 +20,27 @@ app.use(logger('dev'));
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(cookieParser()); // use cookie
+
+const store = new redisStore({
+  ttl: 1000 * 60 * 5
+});
+
+app.use(session({
+  store: store,
+  secret: "random string",
+  cookie: { maxAge: 300000 }
+}));
+
+app.get("/api/logout", (req, res) => {
+  if (req.session.test) {
+    store.destroy(req.session.id, () => {
+      req.session.destroy(() => {
+        res.json({ status: 0, msg: "请重新登录"});
+      });
+    });
+  }
+});
 
 // 引入路由
 require('./route')(app);
