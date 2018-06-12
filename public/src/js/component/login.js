@@ -23,103 +23,89 @@ const validate = values => {
 };
 
 class Login extends React.Component {
-  state = {
-    loginState: true, // 判断是登录还是注册 true则为登录登录逻辑
-    tabKey: "1"
-  };
-
-  changeLoginState = e => {
-    this.setState({
-      loginState: !this.state.loginState,
-      tabKey: e
-    });
-  };
-
   submit = v => {
-    const { Register, Login, dispatch } = this.props;
-    if (this.state.loginState) {
-      return Login(v);
-    } else {
-      return Register(v).then(data => {
-        if (data.includes("注册失败")) {
-          throw new SubmissionError({
-            userName: "用户名已存在, 请重试",
-            _error: "注册失败"
-          });
-        } else {
-          // 注册成功 是否清空表单字段
-          this.setState(
-            () => ({
-              tabKey: "1"
-            }),
-            // () => dispatch(destroy("user_login"))
-          );
-        }
-      });
-    }
+    const { Login } = this.props;
+    return Login(v).then(data => {
+      if (data.status === 0) {
+        throw new SubmissionError({
+          userName: "用户名或密码不正确, 请重试",
+          _error: "登录失败"
+        });
+      }
+    });
   };
 
   render() {
     const { handleSubmit, submitting } = this.props;
-
     return (
       <form onSubmit={handleSubmit(this.submit)}>
-        <Tabs
-          defaultActiveKey={this.state.tabKey}
-          activeKey={this.state.tabKey}
-          onChange={this.changeLoginState}
-          animated={false}
+        <Field
+          placeholder="请输入用户名"
+          name="userName"
+          component={InputField}
+        />
+        <Field
+          type="password"
+          placeholder="请输入密码"
+          name="userPwd"
+          component={InputField}
+        />
+        <button
+          disabled={submitting}
+          type="submit"
+          className="ant-btn ant-btn-primary login-btn"
         >
-          <TabPane tab="登录" key="1">
-            <Field
-              placeholder="请输入用户名"
-              name="userName"
-              component={InputField}
-            />
-            <Field
-              type="password"
-              placeholder="请输入密码"
-              name="userPwd"
-              component={InputField}
-            />
-            <button
-              disabled={submitting}
-              type="submit"
-              className="ant-btn ant-btn-primary login-btn"
-            >
-              登录
-            </button>
-          </TabPane>
-          <TabPane tab="注册" key="2">
-            <Field
-              placeholder="请输入用户名"
-              name="userName"
-              component={InputField}
-            />
-            <Field
-              type="password"
-              placeholder="请输入密码"
-              name="userPwd"
-              component={InputField}
-            />
-            <button
-              disabled={submitting}
-              type="submit"
-              className="ant-btn ant-btn-primary login-btn"
-            >
-              注册
-            </button>
-          </TabPane>
-        </Tabs>
+          登录
+        </button>
+      </form>
+    );
+  }
+}
+
+class Logup extends React.Component {
+  submit = v => {
+    const { Register } = this.props;
+    return Register(v).then(data => {
+      if (data.status === 0) {
+        throw new SubmissionError({
+          userName: "用户名已存在, 请重试",
+          _error: "注册失败"
+        });
+      }
+    });
+  };
+
+  render() {
+    const { handleSubmit, submitting } = this.props;
+    return (
+      <form onSubmit={handleSubmit(this.submit)}>
+        <Field
+          placeholder="请输入用户名"
+          name="userName"
+          component={InputField}
+        />
+        <Field
+          type="password"
+          placeholder="请输入密码"
+          name="userPwd"
+          component={InputField}
+        />
+        <button
+          disabled={submitting}
+          type="submit"
+          className="ant-btn ant-btn-primary login-btn"
+        >
+          注册
+        </button>
       </form>
     );
   }
 }
 
 Login = connect(
-  state => {
+  state => ({
     user: state.user
-  },
+  }),
   dispatch => bindActionCreators(userAction, dispatch)
 )(Login);
 
@@ -128,12 +114,35 @@ Login = reduxForm({
   validate
 })(Login);
 
+Logup = connect(
+  state => ({
+    user: state.user
+  }),
+  dispatch => bindActionCreators(userAction, dispatch)
+)(Logup);
+
+Logup = reduxForm({
+  form: "user_register",
+  validate
+})(Logup);
+
+
 class Index extends React.Component {
   render() {
     const { home: { windowOpen, errMsg, messageOpen, doneMsg } } = this.props;
+    console.log("document.cookie", document.cookie);
     return (
       <div className="login-box">
-        <Login />
+        <div>
+          <Tabs defaultActiveKey="1" animated={false}>
+            <TabPane tab="登录" key="1">
+              <Login />
+            </TabPane>
+            <TabPane tab="注册" key="2">
+              <Logup />
+            </TabPane>
+          </Tabs>
+        </div>
         {windowOpen && <WindowOpen error={errMsg} />}
         {messageOpen && <MessageOpen doneMsg={doneMsg} />}
       </div>
