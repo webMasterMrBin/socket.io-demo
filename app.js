@@ -23,22 +23,29 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 app.use(cookieParser()); // use cookie
 
 const store = new redisStore({
-  ttl: 1000 * 60 * 5
+  ttl: 1000 * 60 * 60 * 8
 });
 
 app.use(session({
   store: store,
   secret: "random string",
-  cookie: { maxAge: 300000 }
+  cookie: { maxAge: 1000 * 60 * 60 * 8 }
 }));
 
+app.use((req, res, next) => {
+  console.log("login req.session", req.session);
+  next();
+});
+
 app.get("/api/logout", (req, res) => {
-  if (req.session.test) {
+  if (req.session.userName) {
     store.destroy(req.session.id, () => {
       req.session.destroy(() => {
-        res.json({ status: 0, msg: "请重新登录"});
+        res.json({ status: 1, msg: "请重新登录"});
       });
     });
+  } else {
+    res.json({ status: 0, msg: "请确认登录状态" });
   }
 });
 

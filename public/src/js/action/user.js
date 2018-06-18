@@ -25,14 +25,14 @@ export function Login(value) {
       data: JSON.stringify(value),
       success: d => {
         console.log("请求结束后 返回的数据", d);
+        dispatch({
+          type: "MESSAGE_OPEN",
+          messageOpen: true,
+          doneMsg: d.msg
+        });
         // 登陆成功
-        if (d.status === 1) {
+        if (d.status) {
           browserHistory.replace("/");
-          dispatch({
-            type: "MESSAGE_OPEN",
-            messageOpen: true,
-            doneMsg: d.msg
-          });
         }
       }
     });
@@ -49,10 +49,13 @@ export function Logout() {
           messageOpen: true,
           doneMsg: d.msg
         });
+        if (d.status) {
+          browserHistory.replace("/login");
+        }
       }
     });
   };
-};
+}
 
 export function GetId() {
   return dispatch => {
@@ -64,6 +67,29 @@ export function GetId() {
           messageOpen: true,
           doneMsg: d
         });
+      }
+    });
+  };
+}
+
+export function GetUser() {
+  return dispatch => {
+    return ajax.get(dispatch, {
+      url: "/api/user",
+      success: d => {
+        console.log("user d", d);
+        if (d.status) {
+          dispatch({
+            type: "USER_LIST",
+            res: d.userInfo
+          });
+        } else {
+          dispatch({
+            type: "WINDOW_OPEN",
+            windowOpen: true,
+            errMsg: d.msg
+          });
+        }
       }
     });
   };
