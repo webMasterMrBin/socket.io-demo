@@ -1,6 +1,6 @@
 import Demo from "component/reduxDemo";
 import { createStore, combineReducers, applyMiddleware } from "redux";
-import { rootReducer } from "./reducer";
+import { user } from "./reducer/user";
 import thunk from "redux-thunk";
 import { createLogger } from "redux-logger";
 import promiseMiddleware from "redux-promise";
@@ -13,7 +13,7 @@ import home from "./reducer/home";
 
 const reducers = combineReducers({
   form: formReducer,
-  rootReducer,
+  user,
   http,
   home
 });
