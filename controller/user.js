@@ -27,12 +27,16 @@ const mod = {
         Object.keys(userInfo).length !== 0 &&
         userPwd === userInfo.userPwd
       ) {
-        res.cookie("userName", userName, { maxAge: 300000 });
+        res.cookie("userName", userName, { maxAge: 1000 * 60 * 60 * 8 });
         if (!req.session.userName) {
           req.session.userName = userName;
-          res.json({ status: 1, msg: "第一次来这里, 欢迎"});
+          res.json({ status: 1, msg: "第一次来这里, 欢迎" });
         } else {
-          res.json({ status: 1, msg: `欢迎登录, 用户${req.session.userName}`});
+          res.json({
+            status: 1,
+            msg: `欢迎登录, 用户${req.session.userName}`,
+            userName
+          });
         }
       } else {
         res.json({ status: 0, msg: "登录失败, 用户名或密码不正确"});
@@ -45,6 +49,22 @@ const mod = {
       res.json({ errMsg: e });
     }
   },
+
+  getUser: async (req, res) => {
+    try {
+      // 用户已登录
+      if (req.session.userName) {
+        const userInfo = await db.user.findOne({
+          userName: req.session.userName
+        });
+        res.json({ status: 1, userInfo });
+      } else {
+        res.json({ status: 0, msg: "请重新登录" })
+      }
+    } catch (e) {
+      res.json({ errMsg: e });
+    }
+  }
 
 };
 

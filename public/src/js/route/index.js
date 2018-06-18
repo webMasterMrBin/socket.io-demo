@@ -6,13 +6,21 @@ import NotFound from "./404";
 
 const Test = () => <div>test</div>;
 
+const Child = () => <div>child</div>;
+
 const routes = [
   {
     path: "/",
     component: App,
     indexRoute: {
       component: Test
-    }
+    },
+    childRoutes: [
+      {
+        path: "child",
+        component: Child
+      }
+    ]
   },
   login,
   NotFound
