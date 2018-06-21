@@ -58,7 +58,11 @@ class Main extends React.Component {
               </Dropdown>
             </div>
           </Header>
-          <Content className="layout-content">{this.props.children}</Content>
+          <Content className="layout-content">
+            {this.props.children}
+            {windowOpen && <WindowOpen error={errMsg} />}
+            {messageOpen && <MessageOpen doneMsg={doneMsg} />}
+          </Content>
         </Layout>
       </Layout>
     );

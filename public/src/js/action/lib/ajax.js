@@ -92,8 +92,12 @@ const post = (dispatch, params) => {
 
 const upload = (dispatch, params) => {
   optionMap.upload.body = params.data;
-  console.log("params.data", params.data);
   return ajax(dispatch, params, optionMap.upload);
 };
 
-export { get, post, upload };
+const remove = (dispatch, params) => {
+  optionMap.delete.body = params.data;
+  return ajax(dispatch, params, optionMap.delete);
+};
+
+export { get, post, upload, remove };
