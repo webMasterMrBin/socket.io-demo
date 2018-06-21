@@ -10,12 +10,14 @@ import { Router, browserHistory, Route } from "react-router";
 import { routes } from "./route";
 import http from "./reducer/http";
 import home from "./reducer/home";
+import file from "./reducer/file";
 
 const reducers = combineReducers({
   form: formReducer,
   user,
   http,
-  home
+  home,
+  file
 });
 
 const store = createStore(reducers, applyMiddleware(thunk, promiseMiddleware, createLogger({collapsed: true})));
