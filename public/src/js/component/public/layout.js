@@ -5,6 +5,7 @@ import { bindActionCreators } from "redux";
 import * as userAction from "action/user";
 import { Layout, Menu, Icon, Dropdown, Button } from "antd";
 import PropTypes from "prop-types";
+import { Link } from "react-router";
 const { Header, Sider, Content } = Layout;
 
 class Main extends React.Component {
@@ -34,8 +35,16 @@ class Main extends React.Component {
           sider
           <Menu theme="dark" mode="inline">
             <Menu.Item key="1">
-              <Icon type="user" />
-              <span>首页</span>
+              <Link to="/">
+                <Icon type="user" />
+                <span>首页</span>
+              </Link>
+            </Menu.Item>
+            <Menu.Item key="2">
+              <Link to="/file">
+                <Icon type="file" />
+                <span>文件系统</span>
+              </Link>
             </Menu.Item>
           </Menu>
         </Sider>

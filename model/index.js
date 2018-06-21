@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const user = require("./user");
+const file = require("./file");
 
 // mongose promise改用node
 mongoose.Promise = Promise;
@@ -18,7 +19,8 @@ db.once("open", function() {
 });
 
 const mod = {
-  user
+  user,
+  file
 };
 
 module.exports = mod;

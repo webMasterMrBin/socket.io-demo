@@ -7,7 +7,7 @@ const extractLESS = new ExtractTextPlugin('css/[name].css');
 module.exports = {
   entry: {
 		main: './public/src/js/index.js',
-    vendor: ["react", "react-dom", "redux", "react-redux", "lodash"]
+    vendor: ["react", "react-dom", "redux", "react-redux", "lodash", "moment"]
   },
   output: {
     filename: '[name].js',
@@ -20,15 +20,18 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        loader: 'babel-loader',
+        loader: "babel-loader"
       },
       {
-        test: /antd.*\.css$/,
-        use: ["style-loader", {loader: 'css-loader', options: {sourceMap: 1}}, "less-loader"]
+        test: /\.css$/,
+        use: ["style-loader", { loader: "css-loader" }]
       },
       {
-        test: /\.less$/i,
-        use: extractLESS.extract([ 'css-loader', 'less-loader' ])
+        test: /\.less$/,
+        use: extractLESS.extract({
+          fallback: "style-loader",
+          use: ["css-loader", "less-loader"]
+        })
       }
     ]
   },
@@ -41,8 +44,9 @@ module.exports = {
   plugins: [
 		new webpack.ProvidePlugin({
       _: "lodash",
-			React: 'react',
-			ReactDOM: 'react-dom',
+      React: "react",
+      ReactDOM: "react-dom",
+      moment: "moment"
 		}),
     new webpack.optimize.CommonsChunkPlugin({
       name: ["vendor", "manifest"] // 指定模块的名称

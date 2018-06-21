@@ -30,6 +30,7 @@ const mod = {
         res.cookie("userName", userName, { maxAge: 1000 * 60 * 60 * 8 });
         if (!req.session.userName) {
           req.session.userName = userName;
+          req.session.userId = userInfo._id;
           res.json({ status: 1, msg: "第一次来这里, 欢迎" });
         } else {
           res.json({

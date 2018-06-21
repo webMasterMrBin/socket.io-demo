@@ -1,5 +1,6 @@
-@import "./login.less";
 @import "./var.less";
+@import "./login.less";
+@import "./file.less";
 
 * {
   box-sizing: border-box;
@@ -112,6 +113,7 @@ body {
   width: calc(100% - 200px);
   background-color: @color-white !important;
   box-shadow: 0 1px 8px rgba(0,0,0,.3);
+  z-index: 99999;
   .head-content {
     display: flex;
     flex-direction: row-reverse;
