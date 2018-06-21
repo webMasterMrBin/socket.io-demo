@@ -1,6 +1,8 @@
 const multer = require("multer");
 const db = require("../model");
 const moment = require("moment");
+const fs = require("fs");
+const path = require("path");
 const upload = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
@@ -49,5 +51,49 @@ module.exports = {
     } catch (e) {
       res.status(500).json({ msg: e });
     }
+  },
+
+  // 删除文件
+  remove: (req, res) => {
+    const { filePath, name } = req.query;
+
+    // 文件存在则删除
+    fs.access(filePath, err => {
+      if (err) {
+        res.status(500).json({ msg: "文件不存在" });
+      } else {
+        fs.unlink(path, err => {
+          if (err) {
+            res.status(500).json({ msg: "文件删除失败" });
+          }
+
+          // 从数据库删除该条文件信息
+          try {
+            (async () => {
+              await db.file.deleteOne({ path });
+              res.json({ msg: `文件${name}已删除` });
+            })();
+          } catch (e) {
+            res.status(500).json({ msg: e });
+          }
+        });
+      }
+    });
+  },
+
+  // 下载文件
+  download: (req, res) => {
+    const { filePath, name } = req.query;
+    fs.access(filePath, err => {
+      if (err) {
+        res.status(500).json({ msg: "文件不存在" });
+      } else {
+        res.set({
+          "Content-Type": "application/octet-stream",
+          "Content-Disposition": `attachment; filename=${name}`
+        });
+        fs.createReadStream(filePath).pipe(res);
+      }
+    });
   }
 };

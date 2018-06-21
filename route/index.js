@@ -11,7 +11,7 @@ const authority = (req, res, next) => {
 
 const apiAuth = (req, res, next) => {
   if (!req.session || !req.session.userName) {
-    res.status(500).json({ msg: "请重新登录" })
+    res.status(500).json({ msg: "请重新登录" });
   }
   next();
 };
@@ -22,6 +22,8 @@ module.exports = app => {
   app.get("/api/user", apiAuth, user.getUser);
   app.post("/api/upload", apiAuth, file.upload);
   app.get("/api/files", apiAuth, file.list);
+  app.delete("/api/file", apiAuth, file.remove);
+  app.get("/api/downloadFile", apiAuth, file.download);
   // 独立的登录页面 session过期或不存在都会重定向到这
   app.get(
     "/login",

@@ -22,10 +22,25 @@ function Upload(formData) {
       data: formData,
       success: d => {
         dispatch(ListFiles());
-        console.log("上传请求done");
       }
     });
   };
 }
 
-export { Upload, ListFiles }
+function RemoveFile(path, name) {
+  return dispatch => {
+    return ajax.remove(dispatch, {
+      url: `/api/file?filePath=${path}&name=${name}`,
+      success: d => {
+        dispatch(ListFiles());
+        dispatch({
+          type: "MESSAGE_OPEN",
+          messageOpen: true,
+          doneMsg: d.msg
+        });
+      }
+    });
+  };
+}
+
+export { Upload, ListFiles, RemoveFile }
