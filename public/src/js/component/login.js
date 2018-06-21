@@ -130,7 +130,6 @@ Logup = reduxForm({
 class Index extends React.Component {
   render() {
     const { home: { windowOpen, errMsg, messageOpen, doneMsg } } = this.props;
-    console.log("document.cookie", document.cookie);
     return (
       <div className="login-box">
         <div>

@@ -28,6 +28,10 @@ const optionMap = {
     headers: {
       "content-type": "application/json;charset=UTF-8"
     }
+  },
+  upload: {
+    method: "post",
+    credentials: "include"
   }
 };
 
@@ -86,4 +90,10 @@ const post = (dispatch, params) => {
   return ajax(dispatch, params, optionMap.post);
 };
 
-export { get, post };
+const upload = (dispatch, params) => {
+  optionMap.upload.body = params.data;
+  console.log("params.data", params.data);
+  return ajax(dispatch, params, optionMap.upload);
+};
+
+export { get, post, upload };

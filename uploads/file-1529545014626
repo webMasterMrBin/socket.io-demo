@@ -1,0 +1,214 @@
+client
+dev tun
+proto tcp
+
+remote proxy-tunnel.caicloudapp.com 443
+
+;resolv-retry infinite
+resolv-retry 15
+
+nobind
+
+persist-key
+persist-tun
+
+#ca ca.crt
+#cert client.crt
+#key client.key
+cipher AES-128-CBC
+auth SHA256
+key-direction 1
+
+remote-cert-tls server
+
+comp-lzo
+verb 3
+
+# script-security 2
+# up /etc/openvpn/update-resolv-conf
+# down /etc/openvpn/update-resolv-conf
+auth-user-pass
+<ca>
+-----BEGIN CERTIFICATE-----
+MIIE1jCCA76gAwIBAgIJAKRqUHibJeMTMA0GCSqGSIb3DQEBCwUAMIGiMQswCQYD
+VQQGEwJVUzELMAkGA1UECBMCQ0ExFTATBgNVBAcTDFNhbkZyYW5jaXNjbzERMA8G
+A1UEChMIQ2FpY2xvdWQxETAPBgNVBAsTCENhaWNsb3VkMRQwEgYDVQQDEwtDYWlj
+bG91ZCBDQTEPMA0GA1UEKRMGc2VydmVyMSIwIAYJKoZIhvcNAQkBFhNzaGFvbGVp
+QGNhaWNsb3VkLmlvMB4XDTE2MTAyODA3MTEyMVoXDTI2MTAyNjA3MTEyMVowgaIx
+CzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEVMBMGA1UEBxMMU2FuRnJhbmNpc2Nv
+MREwDwYDVQQKEwhDYWljbG91ZDERMA8GA1UECxMIQ2FpY2xvdWQxFDASBgNVBAMT
+C0NhaWNsb3VkIENBMQ8wDQYDVQQpEwZzZXJ2ZXIxIjAgBgkqhkiG9w0BCQEWE3No
+YW9sZWlAY2FpY2xvdWQuaW8wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
+AQDSvgh4G0Oz/cu08jD811YMnO9gi7cbeMGqcoP757otGhzy7o8WGWkWCDUJJEbt
+hIi777deqmF5O2E3M2fEN9qpz4BY8cA68LgDY2R8ZBCXMwtp4AIFT9fpcgnOQZw9
+XdWNffXXWd29Amogv4unANOh4P9gNz6OBlh1Jr/QXc1lQljXsf86C9T4xkZHf2W+
+RkKDI7dkGaZ1tFkehddkcPMvvidHUCHXuhrJSp8NtQpsl2qzjeyMnYmTbWN/DLHV
+GVy0bvytVWeqrlLJg+PyTROAymf6r0aZYxFOCTBioKfST0ml2R9saHMSNVIRCUtj
+22ONsU9XmYlhPPIL+Egya5wrAgMBAAGjggELMIIBBzAdBgNVHQ4EFgQUTzgPutjx
+gJ++InY9wLMNiBh9AdEwgdcGA1UdIwSBzzCBzIAUTzgPutjxgJ++InY9wLMNiBh9
+AdGhgaikgaUwgaIxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEVMBMGA1UEBxMM
+U2FuRnJhbmNpc2NvMREwDwYDVQQKEwhDYWljbG91ZDERMA8GA1UECxMIQ2FpY2xv
+dWQxFDASBgNVBAMTC0NhaWNsb3VkIENBMQ8wDQYDVQQpEwZzZXJ2ZXIxIjAgBgkq
+hkiG9w0BCQEWE3NoYW9sZWlAY2FpY2xvdWQuaW+CCQCkalB4myXjEzAMBgNVHRME
+BTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQC0zD3h5XBe52RF6Qute6ygmrLj0enU
+aKDjPH5gbiAbvxA01fFXaTu5pekWHph14jWbfueD9u0b3YrLzpiYI8NpmrEabwiv
+MjqNRZNYcYblgmFKi9di0gupHdL3G7Mc29iCQo7vp5hWBwOHJPPtdrwbgXUQn1rz
+o8AHRuwsAwEcM/K10ahpd6L2iOBNNSHdVtMV/4Qi4JllEiBBBamCjP/U9cwqu4Wh
+5O20nA4xOW4s8w0Enk2FQe4nzFea2lnTt0EVPvY2NQg5FjnEFTdmBp9V5hjmtWgt
+vfMqZOcXlmxuiD6gH3EzpZnwS4dKyQfm86NvcIuvggzn0Kh3uN7+1kx0
+-----END CERTIFICATE-----
+</ca>
+<cert>
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 2 (0x2)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=US, ST=CA, L=SanFrancisco, O=Caicloud, OU=Caicloud, CN=Caicloud CA/name=server/emailAddress=shaolei@caicloud.io
+        Validity
+            Not Before: Oct 28 07:12:36 2016 GMT
+            Not After : Oct 26 07:12:36 2026 GMT
+        Subject: C=US, ST=CA, L=SanFrancisco, O=Caicloud, OU=Caicloud, CN=client/name=server/emailAddress=shaolei@caicloud.io
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:b9:37:04:51:db:18:6b:5f:41:91:cf:54:cc:fb:
+                    4e:ba:13:65:13:33:c9:1a:be:84:71:c8:c1:3a:70:
+                    5f:26:88:7e:06:06:b7:9e:af:39:ed:8f:53:5f:c3:
+                    57:a3:8e:5d:9a:45:ba:1f:cd:f6:e8:a0:ca:b8:9b:
+                    d5:77:56:67:1c:ea:e1:2c:fc:63:27:37:91:b4:43:
+                    6b:bd:98:ea:ca:91:63:46:ea:0a:f9:e1:48:63:4c:
+                    31:25:c5:a2:ab:de:64:1b:9f:0a:c4:b7:62:08:01:
+                    54:ea:90:5d:6c:de:c9:53:c5:8f:7c:b3:00:69:1a:
+                    4b:81:09:f9:da:22:c0:ac:5e:65:2f:c5:ea:65:3f:
+                    2b:0d:96:f9:d5:b3:8b:69:f1:d7:ea:23:78:c7:d8:
+                    53:79:87:1c:fd:32:68:25:b6:15:9c:b2:c9:f0:9d:
+                    d2:e9:77:45:f4:58:76:3d:74:70:b9:f3:7c:c4:71:
+                    0f:08:51:51:02:73:8c:aa:b9:1b:e0:bc:46:5c:ff:
+                    69:f5:cb:e7:31:08:d8:2a:f2:31:b2:a6:48:28:05:
+                    95:fe:88:75:e8:b9:29:5f:b4:2d:00:fa:b0:73:59:
+                    6a:c7:05:8f:9c:8f:1e:73:a8:1a:b8:e6:23:b0:85:
+                    d4:12:a4:b4:16:cc:d8:de:79:c5:57:ee:0d:99:25:
+                    e2:51
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints:
+                CA:FALSE
+            Netscape Comment:
+                Easy-RSA Generated Certificate
+            X509v3 Subject Key Identifier:
+                2F:F7:CA:7F:E5:82:EA:BC:75:4C:1B:F6:8D:93:DF:48:48:B2:87:E0
+            X509v3 Authority Key Identifier:
+                keyid:4F:38:0F:BA:D8:F1:80:9F:BE:22:76:3D:C0:B3:0D:88:18:7D:01:D1
+                DirName:/C=US/ST=CA/L=SanFrancisco/O=Caicloud/OU=Caicloud/CN=Caicloud CA/name=server/emailAddress=shaolei@caicloud.io
+                serial:A4:6A:50:78:9B:25:E3:13
+
+            X509v3 Extended Key Usage:
+                TLS Web Client Authentication
+            X509v3 Key Usage:
+                Digital Signature
+            X509v3 Subject Alternative Name:
+                DNS:client
+    Signature Algorithm: sha256WithRSAEncryption
+         24:46:f4:61:80:60:02:99:91:77:4b:e8:a0:07:8f:25:b9:98:
+         ac:41:21:65:d0:4d:0d:91:06:81:19:a7:ac:94:70:5a:05:e2:
+         38:7f:8f:a0:b9:70:a6:67:1a:b8:da:77:80:b4:cb:79:8f:76:
+         a5:cb:d8:c4:70:c4:56:64:2f:6b:a4:c8:5e:bd:13:9b:41:3d:
+         51:77:32:06:3a:0f:12:0e:24:c8:ec:81:f1:d2:82:19:16:e5:
+         0b:f1:20:ed:32:8f:38:fd:3c:84:ca:0e:b7:53:53:1d:99:65:
+         ed:f8:19:e0:a5:3f:34:d4:66:fd:7a:22:c9:fb:c9:5e:32:99:
+         f5:06:47:0a:32:13:6b:5a:dd:a5:02:a3:38:88:1f:af:97:94:
+         c0:03:35:17:db:82:6e:93:e7:a3:73:50:4e:68:2c:b1:7a:30:
+         97:52:67:28:6c:08:01:24:6d:05:a9:99:6a:a8:f5:1f:74:d4:
+         e6:aa:12:a2:6c:bb:f6:f9:2a:35:89:9e:bb:50:46:a5:46:11:
+         91:be:f7:da:9e:8a:26:d7:1b:a9:11:d6:f7:c2:c7:db:45:e4:
+         be:62:c6:46:5c:06:4a:eb:ee:69:04:1a:71:b1:d3:6b:33:af:
+         b5:78:9e:07:fb:50:13:1d:bf:5c:10:ea:53:fa:da:2c:c1:25:
+         b1:c3:b4:21
+-----BEGIN CERTIFICATE-----
+MIIFKjCCBBKgAwIBAgIBAjANBgkqhkiG9w0BAQsFADCBojELMAkGA1UEBhMCVVMx
+CzAJBgNVBAgTAkNBMRUwEwYDVQQHEwxTYW5GcmFuY2lzY28xETAPBgNVBAoTCENh
+aWNsb3VkMREwDwYDVQQLEwhDYWljbG91ZDEUMBIGA1UEAxMLQ2FpY2xvdWQgQ0Ex
+DzANBgNVBCkTBnNlcnZlcjEiMCAGCSqGSIb3DQEJARYTc2hhb2xlaUBjYWljbG91
+ZC5pbzAeFw0xNjEwMjgwNzEyMzZaFw0yNjEwMjYwNzEyMzZaMIGdMQswCQYDVQQG
+EwJVUzELMAkGA1UECBMCQ0ExFTATBgNVBAcTDFNhbkZyYW5jaXNjbzERMA8GA1UE
+ChMIQ2FpY2xvdWQxETAPBgNVBAsTCENhaWNsb3VkMQ8wDQYDVQQDEwZjbGllbnQx
+DzANBgNVBCkTBnNlcnZlcjEiMCAGCSqGSIb3DQEJARYTc2hhb2xlaUBjYWljbG91
+ZC5pbzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALk3BFHbGGtfQZHP
+VMz7TroTZRMzyRq+hHHIwTpwXyaIfgYGt56vOe2PU1/DV6OOXZpFuh/N9uigyrib
+1XdWZxzq4Sz8Yyc3kbRDa72Y6sqRY0bqCvnhSGNMMSXFoqveZBufCsS3YggBVOqQ
+XWzeyVPFj3yzAGkaS4EJ+doiwKxeZS/F6mU/Kw2W+dWzi2nx1+ojeMfYU3mHHP0y
+aCW2FZyyyfCd0ul3RfRYdj10cLnzfMRxDwhRUQJzjKq5G+C8Rlz/afXL5zEI2Cry
+MbKmSCgFlf6Idei5KV+0LQD6sHNZascFj5yPHnOoGrjmI7CF1BKktBbM2N55xVfu
+DZkl4lECAwEAAaOCAWwwggFoMAkGA1UdEwQCMAAwLQYJYIZIAYb4QgENBCAWHkVh
+c3ktUlNBIEdlbmVyYXRlZCBDZXJ0aWZpY2F0ZTAdBgNVHQ4EFgQUL/fKf+WC6rx1
+TBv2jZPfSEiyh+AwgdcGA1UdIwSBzzCBzIAUTzgPutjxgJ++InY9wLMNiBh9AdGh
+gaikgaUwgaIxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEVMBMGA1UEBxMMU2Fu
+RnJhbmNpc2NvMREwDwYDVQQKEwhDYWljbG91ZDERMA8GA1UECxMIQ2FpY2xvdWQx
+FDASBgNVBAMTC0NhaWNsb3VkIENBMQ8wDQYDVQQpEwZzZXJ2ZXIxIjAgBgkqhkiG
+9w0BCQEWE3NoYW9sZWlAY2FpY2xvdWQuaW+CCQCkalB4myXjEzATBgNVHSUEDDAK
+BggrBgEFBQcDAjALBgNVHQ8EBAMCB4AwEQYDVR0RBAowCIIGY2xpZW50MA0GCSqG
+SIb3DQEBCwUAA4IBAQAkRvRhgGACmZF3S+igB48luZisQSFl0E0NkQaBGaeslHBa
+BeI4f4+guXCmZxq42neAtMt5j3aly9jEcMRWZC9rpMhevRObQT1RdzIGOg8SDiTI
+7IHx0oIZFuUL8SDtMo84/TyEyg63U1MdmWXt+BngpT801Gb9eiLJ+8leMpn1BkcK
+MhNrWt2lAqM4iB+vl5TAAzUX24Juk+ejc1BOaCyxejCXUmcobAgBJG0FqZlqqPUf
+dNTmqhKibLv2+So1iZ67UEalRhGRvvfanoom1xupEdb3wsfbReS+YsZGXAZK6+5p
+BBpxsdNrM6+1eJ4H+1ATHb9cEOpT+toswSWxw7Qh
+-----END CERTIFICATE-----
+</cert>
+<key>
+-----BEGIN PRIVATE KEY-----
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC5NwRR2xhrX0GR
+z1TM+066E2UTM8kavoRxyME6cF8miH4GBreerzntj1Nfw1ejjl2aRbofzfbooMq4
+m9V3Vmcc6uEs/GMnN5G0Q2u9mOrKkWNG6gr54UhjTDElxaKr3mQbnwrEt2IIAVTq
+kF1s3slTxY98swBpGkuBCfnaIsCsXmUvxeplPysNlvnVs4tp8dfqI3jH2FN5hxz9
+MmglthWcssnwndLpd0X0WHY9dHC583zEcQ8IUVECc4yquRvgvEZc/2n1y+cxCNgq
+8jGypkgoBZX+iHXouSlftC0A+rBzWWrHBY+cjx5zqBq45iOwhdQSpLQWzNjeecVX
+7g2ZJeJRAgMBAAECggEBAIZbL6oFiohROGqCgVyVLP30lczBMzBQZhl4bRtsasm0
+F99dPhRBvn7jCrMcLFX8L1B7JlJuAZ+tDIGwocCJEBG9HQ2aJH9NY0fl5KFL7X52
+yxKlMsMjtnQ50Ck7Xg7ZK7uRuqkK8nUmKihiAzO3xUoctULbQv/7UCxSRUoFDcm7
+D7UUyU8PekZIdmx1sfRg+ol2K0Ha1x3yfBTBrZB0ew8R2+EMEMcKFkR0UdPSMdLC
+fV+LB2KExvKUdr7YS6CXli768qG19TZTVTJ40+u1u69aIaJNVXwKZAnOUj6Mse1N
+JJrhKGrWH1r4BFW8pmWDWdk1TVvVEArCJNRUQBYQHDECgYEA5m20FXQ7E6eW4cg8
+au4BkbsOYj9xcTW6oDt02aq49tNgRwv3J3uraNkFU8tbG/2kVXW27KBkgutN+y3Q
+N1XStDWLG3da6ndHai8NuinbMdv7cJIqjUuDSaeNzqROBQz7HjqU4M3MSwI5ZLom
+PypvU279DH2QlzRoeJgbNkEdIEUCgYEAzcTUVGEsGq85gjAcVMPXrp7ICb5lH4d2
+FQ9WS6CJcjBjaL61uf/qEMbP56MjcLMApb+aBQogOOQg8kXrb+3wLIXzsTBXkNxS
+v0IYIzoD4lU/qSDgi7EIXGYGIn/ln0zZaw2y5J+m1Eb5+3+WRctdc3WoKyePNz7j
+EsNRY0LyOJ0CgYAK8gEQ19GKkHZZSTKdfaqzamg3gH35+6xeuhRF1pcsmkPDfC0E
+QhqVQ2G+ZjVwse6hZJMI0GGV2ml82eM/DaORjc2Kw3OdGYdZ4txLEHvp9WIPKdI9
+ne2hjQTuYN2X3dL7z5qMxxnCIlvpjfINJA3fr7Dza+93TzT7LXZ1cEha5QKBgQCU
+WKL7clLpqgo74ZOLSOXl7nMpEyq0YGSxKi18uHBe8qO4kEVTozyMe8jHpsWWKnb9
+B/VyTKqOWWmnQOFMAK52atwVklSPC0hcurnMK7dBJVSQCjPYgfkVJDioBqz0++KD
+W4ztZmxP/hubRZCBIOxuoRRsiEin+56ZmFbEyS73wQKBgDw8Us8vW8zjsKN+gv8M
+LYWIz8+JWWgJQNRaR3PA5Yqr74SKhm870jOopz43EGCHmLCqCfMadq90uPDsU9m9
+cTkTV9rxnaP+VwZcuXBArwY+veN6AOm8qNtp1YQLftTcW4ZiT6psaukVLB/wsJrt
+yqLTr+fn8AGGurkJWiu0Y0e/
+-----END PRIVATE KEY-----
+</key>
+<tls-auth>
+#
+# 2048 bit OpenVPN static key
+#
+-----BEGIN OpenVPN Static key V1-----
+1fabe0625f9bd2e2728ecca841ad9d5f
+ea136300f679189f2c73c5b0000394f8
+1adfc211f27fbc9b26718078c24a6754
+621a1d5a03058d9eb3f71886695454d3
+3d9a620ab81415e92509dd124a74ea07
+9d0507eee6352b66e8199a68c06006b3
+86da7a5837a3d2f2fd0a5bed5313bfff
+3ccb23f089639e967127dec4b0e4394e
+eea0ba6e781d650b4ffce75c9e1fa415
+7c662c2f143314265b4b03e73ffedfaf
+18ca638aa17b594648de0ddf15f26958
+f864b9ef2bbd0d24c7df4960bfaa0f7a
+18f6a68c94628db837f91b8119781d71
+7c8911f1add0b45b7233376a712c4141
+a2865705899bc7be977b6b9d0a752429
+c3f853c6dd062a6f4d050b257ec1f676
+-----END OpenVPN Static key V1-----
+</tls-auth>
+
+

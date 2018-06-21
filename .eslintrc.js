@@ -12,7 +12,8 @@ module.exports = {
     "ReactDOM": true,
     "_": true,
     "IcoPath": true,
-    "i18n": true
+    "i18n": true,
+    "moment": true
   },
   "settings": {
     "import/resolver": {
