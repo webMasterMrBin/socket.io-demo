@@ -7,6 +7,8 @@ const fileSchema = mongoose.Schema({
   type: String, // 文件类型
   modifiedDate: String, // 文件修改时间
   size: Number,
+  webkitRelativePath: String,
+  isDir: Number,
   date: { type: Date, default: Date.now }
 });
 

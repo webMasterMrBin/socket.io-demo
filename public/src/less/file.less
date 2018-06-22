@@ -1,11 +1,29 @@
-.file-table {
-  .file-name {
-    .file {
-      margin-left: 5px;
-      &:hover {
-        color: @color-blue;
-        cursor: pointer;
+.file-system {
+  .file-table {
+    .file-name {
+      &.folder-name {
+        display: flex;
+        align-items: center;
+        .folder-input {
+          margin: 0 5px;
+          width: 200px;
+        }
       }
+      .file {
+        margin-left: 5px;
+        &:hover {
+          color: @color-blue;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
+  .button-group {
+    display: flex;
+    margin-bottom: 50px;
+    .u-upload {
+      margin-right: 20px;
     }
   }
 }

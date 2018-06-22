@@ -1,4 +1,4 @@
-import { Icon, List, Button, Breadcrumb, Table, Tooltip } from "antd";
+import { Icon, List, Button, Breadcrumb, Table, Tooltip, Input } from "antd";
 import { browserHistory, withRouter } from "react-router";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -8,12 +8,19 @@ import FileUpload from "../public/upload";
 class File extends React.Component {
   state = {
     loading: false,
-    downPath: "" // 下载路径
+    downPath: "", // 下载路径
+    dataSource: [],
+    directoryName: ""
   };
 
   componentDidMount() {
-    const { ListFiles } = this.props;
-    ListFiles();
+    const {
+      ListFiles,
+      location: {
+        query: { path }
+      }
+    } = this.props;
+    ListFiles(path);
   }
 
   bytes = v => {
@@ -24,17 +31,70 @@ class File extends React.Component {
     return `${(v / 1024).toFixed(2)}kb`;
   };
 
+  // 显示文件type logo
+  displayLogo = record => {
+    if (record.isDir) {
+      return "folder";
+    }
+    return "file";
+  };
+
   columns = () => {
-    const { RemoveFile, file: { files } } = this.props;
+    const {
+      RemoveFile,
+      file: { files },
+      CreateDir,
+      RemoveDir,
+      location: {
+        query: { path }
+      }
+    } = this.props;
     return [
       {
         title: "文件名",
         key: "name",
         dataIndex: "name",
-        render: text => {
+        width: 300,
+        render: (text, record) => {
+          if (record.createDir) {
+            return (
+              <div className="file-name folder-name">
+                <Icon type="folder" />
+                <Input
+                  onChange={e =>
+                    this.setState({ directoryName: e.target.value })
+                  }
+                  className="folder-input"
+                  size="small"
+                />
+                <a
+                  onClick={() =>
+                    CreateDir({
+                      directoryName: this.state.directoryName,
+                      webkitRelativePath: path
+                    }).then(d => {
+                      if (d) {
+                        this.setState({
+                          dataSource: []
+                        });
+                      }
+                    })
+                  }
+                >
+                  <Icon type="check" />
+                </a>
+                <a>
+                  <Icon
+                    type="close"
+                    onClick={() => this.setState({ dataSource: [] })}
+                  />
+                </a>
+              </div>
+            );
+          }
           return (
             <div className="file-name">
-              <Icon type="picture" />
+              <Icon type={this.displayLogo(record)} />
               <span className="file">{text}</span>
             </div>
           );
@@ -55,9 +115,11 @@ class File extends React.Component {
         key: "action",
         dataIndex: "action",
         render: (text, record) => {
-          console.log("text", text);
-          console.log("record", record);
           const filePath = _.get(files[record.key], "path");
+          const webkitRelativePath = _.get(
+            files[record.key],
+            "webkitRelativePath"
+          );
           return (
             <div>
               <Tooltip title="下载">
@@ -66,7 +128,7 @@ class File extends React.Component {
                     this.setState({
                       downPath: `/api/downloadFile?filePath=${filePath}&name=${
                         record.name
-                      }`
+                      }&diffIframe=${Math.random()}`
                     })
                   }
                   style={{ marginRight: "10px" }}
@@ -75,21 +137,45 @@ class File extends React.Component {
                 </a>
               </Tooltip>
               <Tooltip title="删除">
-                <a onClick={() => RemoveFile(filePath, record.name)}>
+                <a
+                  onClick={() => {
+                    if (record.isDir) {
+                      // 删目录
+                      RemoveDir(record.name, webkitRelativePath);
+                    } else {
+                      // 删文件
+                      RemoveFile(filePath, record.name, webkitRelativePath);
+                    }
+                  }}
+                >
                   <Icon type="delete" />
                 </a>
               </Tooltip>
             </div>
-          )
+          );
         }
       }
     ];
   };
 
+  // 新建文件夹
+  createDirector = dataSource => {
+    dataSource.push({
+      key: dataSource[dataSource.length - 1].key + 1,
+      name: "新建文件夹",
+      size: "-",
+      modifiedDate: moment().format("YYYY-MM-DD HH:mm:ss"),
+      isDir: 1,
+      createDir: 1
+    });
+    this.setState({
+      dataSource
+    });
+  };
+
   render() {
     const {
       file: { files },
-      RemoveFile,
       http: { loading }
     } = this.props;
     const dataSource = [];
@@ -99,13 +185,24 @@ class File extends React.Component {
           key: i,
           name: o.fileName,
           size: o.size ? this.bytes(o.size) : "-",
-          modifiedDate: moment(o.modifiedDate).format("YYYY-MM-DD HH:mm:ss")
+          modifiedDate: moment(o.modifiedDate).format("YYYY-MM-DD HH:mm:ss"),
+          isDir: o.isDir,
+          type: o.type
         });
       });
     }
 
     return (
-      <div>
+      <div className="file-system">
+        <div className="button-group">
+          <FileUpload />
+          <Button
+            disabled={!_.isEmpty(this.state.dataSource)}
+            onClick={() => this.createDirector(dataSource)}
+          >
+            <Icon type="folder-add" />新建文件夹
+          </Button>
+        </div>
         <Breadcrumb>
           <Breadcrumb.Item>全部文件</Breadcrumb.Item>
           <Breadcrumb.Item>1号</Breadcrumb.Item>
@@ -114,25 +211,28 @@ class File extends React.Component {
         <Table
           className="file-table"
           columns={this.columns()}
-          dataSource={dataSource}
+          dataSource={
+            this.state.dataSource.length === 0
+              ? dataSource
+              : this.state.dataSource
+          }
           loading={_.isEmpty(files) && loading}
-          onRow={(record) => {
+          onRow={record => {
             return {
               onClick: () => console.log("record", record)
             };
           }}
         />
-        <FileUpload />
       </div>
     );
   }
 }
 
-module.exports = connect(
+module.exports = withRouter(connect(
   state => ({
     home: state.home,
     file: state.file,
     http: state.http
   }),
   dispatch => bindActionCreators(uploadAction, dispatch)
-)(File);
+)(File));
