@@ -70,11 +70,12 @@ const ajax = (dispatch, params, options) => {
       // 确保ajax fetch 有返回值 且返回值为promise
       return json;
     } catch (err) {
+      console.log("err", err);
       // 输出reject的错误 (接口超时的处理)
       dispatch({
         type: "WINDOW_OPEN",
         windowOpen: true,
-        errMsg: err
+        errMsg: "something wrong"
       });
     }
   })();

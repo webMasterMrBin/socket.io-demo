@@ -24,6 +24,8 @@ module.exports = app => {
   app.get("/api/files", apiAuth, file.list);
   app.delete("/api/file", apiAuth, file.remove);
   app.get("/api/downloadFile", apiAuth, file.download);
+  app.post("/api/directory", apiAuth, file.createDir);
+  app.delete("/api/directory", apiAuth, file.removeDir);
   // 独立的登录页面 session过期或不存在都会重定向到这
   app.get(
     "/login",

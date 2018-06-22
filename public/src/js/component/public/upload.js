@@ -1,6 +1,7 @@
 import { Button, Icon, Dropdown, Menu } from "antd";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { withRouter } from "react-router";
 import * as uploadAction from "action/file";
 
 // 文件上传组件
@@ -11,30 +12,44 @@ class FileUpload extends React.Component {
     this.directory = React.createRef();
   }
 
+  // 上传文件夹
+  onDirChange = () => {
+    const { Upload, location: { query: { path } } } = this.props;
+    const formData = new FormData();
+    formData.append("uploadWay", "directory");
+    _.forEach(this.directory.current.files, (o, i) => {
+      console.log("o", o);
+      formData.append(`file${i}`, o);
+      formData.append(`file${i}-path`, o.webkitRelativePath);
+    });
+    Upload(formData, path);
+  };
+
   onChange = () => {
-    const { Upload } = this.props;
+    const { Upload, location: { query: { path } } } = this.props;
     const formData = new FormData();
     formData.append("file", this.file.current.files[0]);
-    Upload(formData);
-    console.log("files", this.file.current.files);
+    Upload(formData, path);
+    console.log("file", this.file.current.files);
   };
 
   menu = () => {
     return (
       <Menu>
         <Menu.Item onClick={() => this.file.current.click()}>
-          选择文件
+          <Icon type="file-add" /> 选择文件
         </Menu.Item>
         <Menu.Item onClick={() => this.directory.current.click()}>
-          选择文件夹
+          <Icon type="folder-add" /> 选择文件夹
         </Menu.Item>
       </Menu>
     );
   };
 
   render() {
+    console.log("this.props", this.props);
     return (
-      <div>
+      <div className="u-upload">
         <input
           style={{ display: "none" }}
           type="file"
@@ -45,8 +60,10 @@ class FileUpload extends React.Component {
           ref={this.directory}
           style={{ display: "none" }}
           type="file"
+          multiple="true"
           webkitdirectory="true"
           directory="true"
+          onChange={this.onDirChange}
         />
         <Dropdown overlay={this.menu()}>
           <Button>
@@ -59,11 +76,9 @@ class FileUpload extends React.Component {
   }
 }
 
-
-
-module.exports = connect(
+module.exports = withRouter(connect(
   state => ({
     home: state.home
   }),
   dispatch => bindActionCreators(uploadAction, dispatch)
-)(FileUpload);
+)(FileUpload));
