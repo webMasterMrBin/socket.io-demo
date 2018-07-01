@@ -77,7 +77,7 @@ function CreateDir(v) {
 function RemoveDir(directoryName, webkitRelativePath) {
   return dispatch => {
     return ajax.remove(dispatch, {
-      url: `/api/directory?directoryName=${directoryName}`,
+      url: `/api/directory?directoryName=${directoryName}&webkitRelativePath=${webkitRelativePath}`,
       success: d => {
         dispatch(ListFiles(webkitRelativePath));
         dispatch({

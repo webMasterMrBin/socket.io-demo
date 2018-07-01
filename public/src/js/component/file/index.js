@@ -1,5 +1,5 @@
 import { Icon, List, Button, Breadcrumb, Table, Tooltip, Input } from "antd";
-import { browserHistory, withRouter } from "react-router";
+import { browserHistory, withRouter, Link } from "react-router";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as uploadAction from "action/file";
@@ -7,10 +7,13 @@ import FileUpload from "../public/upload";
 
 class File extends React.Component {
   state = {
-    loading: false,
     downPath: "", // 下载路径
     dataSource: [],
-    directoryName: ""
+    directoryName: "",
+    url: {
+      pathname: "/file",
+      query: { path: "" }
+    }
   };
 
   componentDidMount() {
@@ -21,6 +24,18 @@ class File extends React.Component {
       }
     } = this.props;
     ListFiles(path);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {
+      location: {
+        query: { path }
+      },
+      ListFiles
+    } = this.props;
+    if (path !== nextProps.location.query.path) {
+      ListFiles(nextProps.location.query.path);
+    }
   }
 
   bytes = v => {
@@ -176,9 +191,16 @@ class File extends React.Component {
   render() {
     const {
       file: { files },
-      http: { loading }
+      http: { loading },
+      location: {
+        query: { path }
+      }
     } = this.props;
     const dataSource = [];
+    const pathArr = path.split("/").slice(1);
+    let sum = "";
+    const breadUrl = [];
+
     if (!_.isEmpty(files)) {
       _.forEach(files, (o, i) => {
         dataSource.push({
@@ -204,8 +226,25 @@ class File extends React.Component {
           </Button>
         </div>
         <Breadcrumb>
-          <Breadcrumb.Item>全部文件</Breadcrumb.Item>
-          <Breadcrumb.Item>1号</Breadcrumb.Item>
+          <Breadcrumb.Item>
+            <a>
+              <Link to="http://localhost:4000/file?path=/">全部文件</Link>
+            </a>
+          </Breadcrumb.Item>
+          {pathArr.map((o, i) => {
+            sum += `/${o}`;
+            // breadUrl [1,2,3] 返回 [1, 3, 6]
+            breadUrl.push(sum);
+            return (
+              <Breadcrumb.Item key={i}>
+                <a>
+                  <Link to={`http://localhost:4000/file?path=${breadUrl[i]}`}>
+                    {o}
+                  </Link>
+                </a>
+              </Breadcrumb.Item>
+            );
+          })}
         </Breadcrumb>
         <iframe src={this.state.downPath} style={{ display: "none" }} />
         <Table
@@ -216,10 +255,19 @@ class File extends React.Component {
               ? dataSource
               : this.state.dataSource
           }
-          loading={_.isEmpty(files) && loading}
+          loading={loading}
           onRow={record => {
             return {
-              onClick: () => console.log("record", record)
+              onClick: () => console.log("record", record),
+              onDoubleClick: () => {
+                if (record.isDir) {
+                  browserHistory.replace(
+                    `${location.href}${location.href.split("")[
+                      location.href.length - 1
+                    ] === "/" ? "" : "/"}${record.name}`
+                  )
+                }
+              }
             };
           }}
         />

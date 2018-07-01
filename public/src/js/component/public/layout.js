@@ -41,7 +41,7 @@ class Main extends React.Component {
               </Link>
             </Menu.Item>
             <Menu.Item key="2">
-              <Link to="/file?path=%2F">
+              <Link to="/file?path=/">
                 <Icon type="file" />
                 <span>文件系统</span>
               </Link>

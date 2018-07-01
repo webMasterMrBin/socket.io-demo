@@ -150,26 +150,23 @@ module.exports = {
   },
 
   // 删除文件夹目录(文件夹  里面所有文件夹和文件)
-  // removeDir: async (req, res) => {
-  //   const { directoryName } = req.query;
-  //   try {
-  //     const removeCurrentDir = db.file.deleteOne({
-  //       fileName: directoryName,
-  //       isDir: 1
-  //     });
-  //     const removeChildDir = db.file.deleteMany({
-  //       isDir: 1,
-  //
-  //     })
-  //     const removeFile = db.file.deleteMany({
-  //       fileName
-  //     });
-  //     await Promise.all([removeCurrentDir, removeFile]);
-  //     res.json({ msg: `删除文件夹${directoryName}成功` });
-  //   } catch (e) {
-  //     res.status(500).json({ msg: e });
-  //   }
-  // },
+  removeDir: async (req, res) => {
+    const { directoryName, webkitRelativePath } = req.query;
+    try {
+      const removeCurrentDir = db.file.deleteOne({
+        fileName: directoryName,
+        isDir: 1
+      });
+      // 该目录下所有文件夹和文件
+      // const removeChild = db.file.deleteMany({
+      //   webkitRelativePath:
+      // })
+      await Promise.all([removeCurrentDir, removeChild]);
+      res.json({ msg: `删除文件夹${directoryName}成功` });
+    } catch (e) {
+      res.status(500).json({ msg: e });
+    }
+  },
 
   // 删除文件
   remove: (req, res) => {
