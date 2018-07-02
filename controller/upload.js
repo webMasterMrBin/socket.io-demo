@@ -15,6 +15,25 @@ const upload = multer({
   })
 }).any();
 
+function unlink(res, filePath) {
+  return new Promise((resolve, reject) => {
+    fs.access(filePath, err => {
+      if (err) {
+        reject("文件不存在");
+        res.status(500).json({ msg: "文件不存在" });
+      } else {
+        fs.unlink(filePath, err => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve("文件删除成功");
+          }
+        });
+      }
+    });
+  });
+}
+
 module.exports = {
   upload: (req, res) => {
     upload(req, res, err => {
@@ -153,19 +172,39 @@ module.exports = {
   removeDir: async (req, res) => {
     const { directoryName, webkitRelativePath } = req.query;
     try {
+      // 文件存储的实际路径
+      const files = await db.file.find({
+        fileId: req.session.userId,
+        isDir: 0,
+        webkitRelativePath: new RegExp(
+          `^${
+            webkitRelativePath === "/" ? "/" : webkitRelativePath
+          }${directoryName}`
+        )
+      });
+
+      const unlinkFromUpload = files.map(o => {
+        return unlink(res, o.path);
+      });
+
       const removeCurrentDir = db.file.deleteOne({
+        fileId: req.session.userId,
         fileName: directoryName,
         isDir: 1
       });
-      console.log("removeDir webkitRelativePath", webkitRelativePath);
+
       // 该目录下所有文件夹和文件
       const removeChild = db.file.deleteMany({
+        fileId: req.session.userId,
         webkitRelativePath: new RegExp(
-          `^${webkitRelativePath}/${directoryName}`
+          `^${
+            webkitRelativePath === "/" ? "/" : webkitRelativePath
+          }${directoryName}`
         )
       });
-      const result = await Promise.all([removeCurrentDir, removeChild]);
-      console.log("result", result);
+      // db里面删数据和从uploads删文件同时执行
+      await Promise.all([removeCurrentDir, removeChild, ...unlinkFromUpload]);
+
       res.json({ msg: `删除文件夹${directoryName}成功` });
     } catch (e) {
       res.status(500).json({ msg: e });
@@ -189,7 +228,10 @@ module.exports = {
           // 从数据库删除该条文件信息
           try {
             (async () => {
-              await db.file.deleteOne({ path: filePath });
+              await db.file.deleteOne({
+                fileId: req.session.userId,
+                path: filePath
+              });
               res.json({ msg: `文件${name}已删除` });
             })();
           } catch (e) {
