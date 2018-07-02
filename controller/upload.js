@@ -157,11 +157,15 @@ module.exports = {
         fileName: directoryName,
         isDir: 1
       });
+      console.log("removeDir webkitRelativePath", webkitRelativePath);
       // 该目录下所有文件夹和文件
-      // const removeChild = db.file.deleteMany({
-      //   webkitRelativePath:
-      // })
-      await Promise.all([removeCurrentDir, removeChild]);
+      const removeChild = db.file.deleteMany({
+        webkitRelativePath: new RegExp(
+          `^${webkitRelativePath}/${directoryName}`
+        )
+      });
+      const result = await Promise.all([removeCurrentDir, removeChild]);
+      console.log("result", result);
       res.json({ msg: `删除文件夹${directoryName}成功` });
     } catch (e) {
       res.status(500).json({ msg: e });

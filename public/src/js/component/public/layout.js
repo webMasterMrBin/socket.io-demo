@@ -16,7 +16,15 @@ class Main extends React.Component {
 
   render() {
     const {
-      home: { windowOpen, errMsg, messageOpen, doneMsg },
+      home: {
+        windowOpen,
+        errMsg,
+        messageOpen,
+        doneMsg,
+        confirm,
+        confirmMsg,
+        confirmFunc
+      },
       user: { userName },
       Logout,
     } = this.props;
@@ -60,7 +68,14 @@ class Main extends React.Component {
           </Header>
           <Content className="layout-content">
             {this.props.children}
-            {windowOpen && <WindowOpen error={errMsg} />}
+            {windowOpen && (
+              <WindowOpen
+                error={errMsg}
+                confirm={confirm}
+                confirmMsg={confirmMsg}
+                confirmFunc={confirmFunc}
+              />
+            )}
             {messageOpen && <MessageOpen doneMsg={doneMsg} />}
           </Content>
         </Layout>
