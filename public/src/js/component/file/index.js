@@ -54,6 +54,25 @@ class File extends React.Component {
     return "file";
   };
 
+  // 删文件和文件夹
+  remove = (record, webkitRelativePath, filePath) => {
+    const { WindowOpenConfirm, RemoveDir, RemoveFile } = this.props;
+    WindowOpenConfirm(
+      record.isDir === 1
+        ? `确认删除文件夹${record.name}下的所有文件?`
+        : `确认删除文件${record.name}`,
+      () => {
+        if (record.isDir) {
+          // 删目录
+          RemoveDir(record.name, webkitRelativePath);
+        } else {
+          // 删文件
+          RemoveFile(filePath, record.name, webkitRelativePath);
+        }
+      }
+    );
+  };
+
   columns = () => {
     const {
       RemoveFile,
@@ -153,15 +172,9 @@ class File extends React.Component {
               </Tooltip>
               <Tooltip title="删除">
                 <a
-                  onClick={() => {
-                    if (record.isDir) {
-                      // 删目录
-                      RemoveDir(record.name, webkitRelativePath);
-                    } else {
-                      // 删文件
-                      RemoveFile(filePath, record.name, webkitRelativePath);
-                    }
-                  }}
+                  onClick={() =>
+                    this.remove(record, webkitRelativePath, filePath)
+                  }
                 >
                   <Icon type="delete" />
                 </a>

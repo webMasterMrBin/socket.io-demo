@@ -1,5 +1,6 @@
 import * as ajax from "./lib/ajax";
 import { browserHistory } from "react-router";
+import { WindowOpenConfirm } from "./home";
 
 function ListFiles(path) {
   return dispatch => {
@@ -43,6 +44,10 @@ function RemoveFile(path, name, webkitRelativePath) {
           messageOpen: true,
           doneMsg: d.msg
         });
+        dispatch({
+          type: "WINDOW_CLOSE",
+          windowOpen: false
+        });
       }
     });
   };
@@ -85,9 +90,20 @@ function RemoveDir(directoryName, webkitRelativePath) {
           messageOpen: true,
           doneMsg: d.msg
         });
+        dispatch({
+          type: "WINDOW_CLOSE",
+          windowOpen: false
+        });
       }
     });
   };
 }
 
-export { Upload, ListFiles, RemoveFile, CreateDir, RemoveDir };
+export {
+  Upload,
+  ListFiles,
+  RemoveFile,
+  CreateDir,
+  RemoveDir,
+  WindowOpenConfirm
+};
