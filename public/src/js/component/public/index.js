@@ -10,21 +10,18 @@ const ValidateTip = props => (
   </div>
 )
 
-class InputField extends React.Component {
-  render() {
-    const {
-      input,
-      meta: { error, touched }
-    } = this.props;
-    const otherProps = _.omit(this.props, ["input", "meta"]);
-
-    return (
-      <div className="input-box" style={{ width: otherProps.width || "100%" }}>
-        <Input className="input-field" {...otherProps} {...input} />
-        {touched && error ? <ValidateTip error={error} /> : ""}
-      </div>
-    );
-  }
+const InputField = props => {
+  const {
+    input,
+    meta: { error, touched }
+  } = props;
+  const otherProps = _.omit(props, ["input", "meta"]);
+  return (
+    <div className="input-box" style={{ width: otherProps.width || "100%" }}>
+      <Input className="input-field" {...otherProps} {...input} />
+      {touched && error ? <ValidateTip error={error} /> : ""}
+    </div>
+  );
 }
 
 export { InputField };
