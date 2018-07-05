@@ -4,10 +4,13 @@ import App from "component/index";
 import login from "./login";
 import NotFound from "./404";
 import file from "./file";
+import { newComponent } from "./hoc";
 
 const Test = () => <div>test</div>;
 
-class Child extends React.Component {
+const { Provider, Consumer } = React.createContext("defaultValue");
+
+class Child extends React.PureComponent {
   state: {
     suck: 5
   }
@@ -21,14 +24,14 @@ class Child extends React.Component {
     console.log("child componentDidMount");
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    console.log("child shouldComponentUpdate");
-    if (nextProps.parentState !== this.props.parentState) {
-      // props中parentstate 更改了则子组件进入更新状态 发生重渲
-      return true;
-    }
-    return true;
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   console.log("child shouldComponentUpdate");
+  //   if (nextProps.parentState !== this.props.parentState) {
+  //     // props中parentstate 更改了则子组件进入更新状态 发生重渲
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
   componentWillReceiveProps(nextProps) {
     console.log("child componentWillReceiveProps");
@@ -45,6 +48,7 @@ class Child extends React.Component {
 
   render() {
     console.log("子组件开始渲染");
+    console.log("child this.props", this.props);
     return (
       <div>
         child name{this.props.name} parent count {this.props.parentState}
@@ -54,7 +58,19 @@ class Child extends React.Component {
   }
 }
 
+const ChildFunc = () => {
+  console.log("now child render");
+  return <div>jjjjjj</div>;
+}
 
+function Ff(props) {
+  console.log("props", props);
+  return <Consumer>{value => <div>{value}</div>}</Consumer>;
+}
+
+function Kk(props) {
+  return <div><Ff tmp="tmp" /></div>
+}
 
 class Lifecycle extends React.Component {
   state = {
@@ -93,13 +109,19 @@ class Lifecycle extends React.Component {
 
   render() {
     console.log("父组件开始渲染");
+    // return (
+    //   <div>
+    //     {this.props.name || "空"}state:{this.state.count}
+    //     <Child parentState={this.state.count} />
+    //     <button onClick={() => this.setState({ count: 2 })}>change state</button>
+    //   </div>
+    // );
     return (
-      <div>
-        {this.props.name || "空"}state:{this.state.count}
-        <Child />
-        <button onClick={() => this.setState({ count: 2 })}>change state</button>
-      </div>
-    );
+      <Provider value="gg">
+        <div>nnnnn</div>
+        <Kk />
+      </Provider>
+    )
   }
 }
 
@@ -116,6 +138,14 @@ const routes = [
       {
         path: "lifecycle",
         component: fuck
+      },
+      {
+        path: "demo",
+        component: Demo
+      },
+      {
+        path: "hoc",
+        component: newComponent
       },
       file
     ]

@@ -3,8 +3,9 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as action from "../action";
-import { reduxForm, Field, stopSubmit, destroy } from "redux-form";
+import { reduxForm, Field, stopSubmit, destroy, unregisterField, registerField } from "redux-form";
 import { InputField } from "./public";
+import { Input } from "antd";
 require("../../less/index.less");
 
 const validate = values => {
@@ -24,18 +25,22 @@ class Login extends React.Component {
   // }
 
   render() {
-    // console.log("this.props", this.props);
-    const { handleSubmit, dispatch } = this.props;
+    console.log("this.props", this.props);
+    const { handleSubmit, dispatch, registeredFields } = this.props;
+    console.log("registeredFields", registeredFields);
     return (
-      <form onSubmit={handleSubmit(v => this.props.dispatch(stopSubmit("test_login", validate(v))))}>
-        <Field width="50%" normalize={v => v.toUpperCase()} name="uname" component={InputField} type="text" />
+      <form onSubmit={handleSubmit(v => console.log("form values", v))}>
+        <Field width="50%" name="uname" component={InputField} type="text" />
         <Field name="pwd" component="input" type="text" />
+        <Field name="other" component={InputField} />
         <button type="submit">提交</button>
         <button type="button" onClick={() => this.props.List("发出请求", "收到请求")}>
           点我
         </button>
         <button onClick={() => dispatch(destroy("test_login"))}>清空表单所有值</button>
-      </form>
+        <button type="button" onClick={() => dispatch(unregisterField("test_login", "uname"))}>点击unregister</button>
+          <button type="button" onClick={() => dispatch(registerField("test_login", "uname", "Field"))}>点击register</button>
+    </form>
     );
   }
 }
@@ -44,7 +49,8 @@ class Login extends React.Component {
 Login = connect(
   state => {
     return {
-      rootReducer: state.rootReducer
+      rootReducer: state.rootReducer,
+      test_login: state.form
     };
   },
   // 自定义映射的dispatch action的方法, 则在组件中没有distach 方法 👇即绑定了clickMe方法
@@ -66,7 +72,7 @@ Login = reduxForm({
     pwd: 123
   },
   destroyOnUnmount: false, // 表单unmount卸载时保存状态 not destroy
-  forceUnregisterOnUnmount: true,
+  // forceUnregisterOnUnmount: true,
   enableReinitialize: true,
   keepDirtyOnReinitialize: true
 })(Login);
