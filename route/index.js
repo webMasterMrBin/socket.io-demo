@@ -5,15 +5,17 @@ const file = require("../controller/upload");
 const authority = (req, res, next) => {
   if (!req.session || !req.session.userName) {
     res.redirect("/login");
+  } else {
+    next();
   }
-  next();
 };
 
 const apiAuth = (req, res, next) => {
   if (!req.session || !req.session.userName) {
     res.status(500).json({ msg: "请重新登录" });
+  } else {
+    next();
   }
-  next();
 };
 
 module.exports = app => {
@@ -33,8 +35,9 @@ module.exports = app => {
       if (req.session && req.session.userName) {
         // 已经登录过了有用户信息 则跳转/
         res.redirect("/");
+      } else {
+        next();
       }
-      next();
     },
     (req, res) => {
       res.render("index");

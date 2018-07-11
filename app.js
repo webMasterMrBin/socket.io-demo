@@ -34,6 +34,12 @@ app.use(session({
 
 app.use((req, res, next) => {
   console.log("login req.session", req.session);
+  // Website you wish to allow to connect
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  // Request methods you wish to allow
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST");
+
   next();
 });
 
