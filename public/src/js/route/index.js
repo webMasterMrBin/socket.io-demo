@@ -11,47 +11,34 @@ const Test = () => <div>test</div>;
 const { Provider, Consumer } = React.createContext("defaultValue");
 
 class Child extends React.PureComponent {
-  state: {
-    suck: 5
+  constructor(props) {
+    super(props);
+    this.state = {
+      suck: 5
+    }
+    console.log("child 实例化");
   }
 
-  componentWillMount() {
-    console.log("child componentWillMount");
-    this.setState({ count: 1 });
+  static getDerivedStateFromProps(nextProps, prevState) {
+    console.log("child getDerivedStateFromProps nextprops", nextProps);
+    console.log("child getDerivedStateFromProps prevstate", prevState);
+    return null
   }
 
-  componentDidMount() {
-    console.log("child componentDidMount");
-  }
-
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   console.log("child shouldComponentUpdate");
-  //   if (nextProps.parentState !== this.props.parentState) {
-  //     // props中parentstate 更改了则子组件进入更新状态 发生重渲
-  //     return true;
-  //   }
-  //   return false;
+  // componentWillReceiveProps(nextProps) {
+  //   console.log("child componentWillReceiveProps", nextProps);
   // }
 
-  componentWillReceiveProps(nextProps) {
-    console.log("child componentWillReceiveProps");
-    console.log("child nextProps", nextProps);
-  }
-
-  componentWillUpdate() {
-    console.log("child componentWillUpdate");
-  }
-
-  componentDidUpdate() {
-    console.log("child componentDidUpdate");
-  }
+  // shouldComponentUpdate() {
+  //   return false
+  // }
 
   render() {
     console.log("子组件开始渲染");
     console.log("child this.props", this.props);
     return (
       <div>
-        child name{this.props.name} parent count {this.props.parentState}
+        count {this.props.parentState}
         <button onClick={() => this.setState({ suck: 6 })}>change child state</button>
       </div>
     )
@@ -81,47 +68,54 @@ class Lifecycle extends React.Component {
   //   name: "default"
   // };
 
-  componentWillMount() {
-    console.log("componentWillMount");
-    this.setState({ count: 1 });
-  }
+  // componentWillMount() {
+  //   console.log("componentWillMount");
+  //   this.setState({ count: 1 });
+  // }
+  //
+  // componentDidMount() {
+  //   console.log("componentDidMount");
+  // }
+  //
+  // shouldComponentUpdate() {
+  //   console.log("shouldComponentUpdate");
+  //   return true;
+  // }
+  //
+  // componentWillReceiveProps() {
+  //   console.log("componentWillReceiveProps");
+  // }
+  //
+  // componentWillUpdate() {
+  //   console.log("componentWillUpdate");
+  // }
+  //
+  // componentDidUpdate() {
+  //   console.log("componentDidUpdate");
+  // }
 
-  componentDidMount() {
-    console.log("componentDidMount");
-  }
-
-  shouldComponentUpdate() {
-    console.log("shouldComponentUpdate");
-    return true;
-  }
-
-  componentWillReceiveProps() {
-    console.log("componentWillReceiveProps");
-  }
-
-  componentWillUpdate() {
-    console.log("componentWillUpdate");
-  }
-
-  componentDidUpdate() {
-    console.log("componentDidUpdate");
+  static getDerivedStateFromProps(nextProps, prevState) {
+    console.log("getDerivedStateFromProps nextprops", nextProps);
+    console.log("getDerivedStateFromProps prevstate", prevState);
+    return null
   }
 
   render() {
     console.log("父组件开始渲染");
-    // return (
-    //   <div>
-    //     {this.props.name || "空"}state:{this.state.count}
-    //     <Child parentState={this.state.count} />
-    //     <button onClick={() => this.setState({ count: 2 })}>change state</button>
-    //   </div>
-    // );
     return (
-      <Provider value="gg">
-        <div>nnnnn</div>
-        <Kk />
-      </Provider>
-    )
+      <div>
+        {this.props.name || "空"}state:{this.state.count}
+        <Child />
+        <button onClick={() => this.setState({ count: this.state.count })}>change state</button>
+      </div>
+    );
+    // return (
+    //   <Provider value="gg">
+    //     count: {this.state.count}
+    //     <button onClick={() => this.setState({ count: this.state.count + 1 })}>change state</button>
+    //     <Kk />
+    //   </Provider>
+    // )
   }
 }
 

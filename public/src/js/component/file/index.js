@@ -6,15 +6,25 @@ import * as uploadAction from "action/file";
 import FileUpload from "../public/upload";
 
 class File extends React.Component {
-  state = {
-    downPath: "", // 下载路径
-    dataSource: [],
-    directoryName: "",
-    url: {
-      pathname: "/file",
-      query: { path: "" }
-    }
-  };
+  constructor(props) {
+    super(props);
+    const {
+      location: {
+        query: { path }
+      }
+    } = this.props;
+
+    this.state = {
+      downPath: "", // 下载路径
+      dataSource: [],
+      directoryName: "",
+      url: {
+        pathname: "/file",
+        query: { path: "" }
+      },
+      path // 文件的webkitRelativePath路径
+    };
+  }
 
   componentDidMount() {
     const {
@@ -26,16 +36,20 @@ class File extends React.Component {
     ListFiles(path);
   }
 
-  componentWillReceiveProps(nextProps) {
+  static getDerivedStateFromProps(nextProps, prevState) {
     const {
       location: {
         query: { path }
       },
       ListFiles
-    } = this.props;
-    if (path !== nextProps.location.query.path) {
-      ListFiles(nextProps.location.query.path);
+    } = nextProps;
+    if (path !== prevState.path) {
+      // 点击目录url更改了
+      ListFiles(path);
     }
+    return {
+      path
+    };
   }
 
   bytes = v => {
