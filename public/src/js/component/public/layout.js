@@ -6,6 +6,7 @@ import * as userAction from "action/user";
 import { Layout, Menu, Icon, Dropdown, Button } from "antd";
 import PropTypes from "prop-types";
 import { Link } from "react-router";
+import ProgressControl from "./progress";
 const { Header, Sider, Content } = Layout;
 
 class Main extends React.Component {
@@ -27,6 +28,7 @@ class Main extends React.Component {
       },
       user: { userName },
       Logout,
+      progress: { progressOpen, fileProgress }
     } = this.props;
 
     const menu = (
@@ -77,6 +79,7 @@ class Main extends React.Component {
               />
             )}
             {messageOpen && <MessageOpen doneMsg={doneMsg} />}
+            {progressOpen && <ProgressControl fileProgress={fileProgress} />}
           </Content>
         </Layout>
       </Layout>
@@ -87,7 +90,8 @@ class Main extends React.Component {
 module.exports = connect(
   state => ({
     home: state.home,
-    user: state.user
+    user: state.user,
+    progress: state.progress
   }),
   dispatch => bindActionCreators(userAction, dispatch)
 )(Main);

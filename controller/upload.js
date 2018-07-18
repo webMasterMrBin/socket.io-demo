@@ -126,7 +126,7 @@ module.exports = {
               size: req.files[0].size,
               webkitRelativePath: webkitRelativePath
             });
-            res.json({ msg: "上传完成" });
+            res.json({ msg: `文件${req.files[0].originalname}上传成功` });
           })();
         } catch (e) {
           res.status(500).json({ msg: e });
