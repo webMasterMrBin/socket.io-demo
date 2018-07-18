@@ -34,12 +34,22 @@ class FileUpload extends React.Component {
   };
 
   menu = () => {
+    const {
+      progress: { percent },
+      http: { loading }
+    } = this.props;
     return (
       <Menu>
-        <Menu.Item onClick={() => this.file.current.click()}>
+        <Menu.Item
+          disabled={loading && percent !== 100}
+          onClick={() => this.file.current.click()}
+        >
           <Icon type="file-add" /> 选择文件
         </Menu.Item>
-        <Menu.Item onClick={() => this.directory.current.click()}>
+        <Menu.Item
+          disabled={loading && percent !== 100}
+          onClick={() => this.directory.current.click()}
+        >
           <Icon type="folder-add" /> 选择文件夹
         </Menu.Item>
       </Menu>
@@ -47,7 +57,6 @@ class FileUpload extends React.Component {
   };
 
   render() {
-    console.log("this.props", this.props);
     return (
       <div className="u-upload">
         <input
@@ -78,7 +87,9 @@ class FileUpload extends React.Component {
 
 module.exports = withRouter(connect(
   state => ({
-    home: state.home
+    home: state.home,
+    progress: state.progress,
+    http: state.http
   }),
   dispatch => bindActionCreators(uploadAction, dispatch)
 )(FileUpload));

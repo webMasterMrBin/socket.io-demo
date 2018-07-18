@@ -11,13 +11,15 @@ import { routes } from "./route";
 import http from "./reducer/http";
 import home from "./reducer/home";
 import file from "./reducer/file";
+import progress from "./reducer/progress";
 
 const reducers = combineReducers({
   form: formReducer,
   user,
   http,
   home,
-  file
+  file,
+  progress
 });
 
 const store = createStore(reducers, applyMiddleware(thunk, promiseMiddleware, createLogger({collapsed: true})));

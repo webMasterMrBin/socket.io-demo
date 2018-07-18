@@ -1,5 +1,7 @@
 const user = require("../controller/user");
 const file = require("../controller/upload");
+const fs = require("fs");
+const path = require("path");
 
 // 判断用户登录状态
 const authority = (req, res, next) => {
@@ -28,6 +30,19 @@ module.exports = app => {
   app.get("/api/downloadFile", apiAuth, file.download);
   app.post("/api/directory", apiAuth, file.createDir);
   app.delete("/api/directory", apiAuth, file.removeDir);
+  app.get("/api/progress", apiAuth, (req, res) => {
+    fs.readFile(path.join(
+      __dirname,
+      "../../../Downloads/毒枭.Narcos.S02E09.中英字幕.WEB-HR.AAC.1024X576.x264.mp4"
+      ),
+      (err, data) => {
+        if (err) {
+          console.log(err);
+        }
+        res.json(data);
+      }
+    );
+  });
   // 独立的登录页面 session过期或不存在都会重定向到这
   app.get(
     "/login",

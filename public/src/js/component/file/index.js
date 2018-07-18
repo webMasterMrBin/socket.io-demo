@@ -1,4 +1,4 @@
-import { Icon, List, Button, Breadcrumb, Table, Tooltip, Input } from "antd";
+import { Icon, List, Button, Breadcrumb, Table, Tooltip, Input, Progress } from "antd";
 import { browserHistory, withRouter, Link } from "react-router";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
