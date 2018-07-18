@@ -107,6 +107,34 @@ body {
   margin-right: 20px;
 }
 
+.u-progress {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 500px;
+  height: 300px;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+  border: 1px solid #e2e2e2;
+  box-shadow: 0 0 10px #ccc;
+  background-color: #fff;
+  padding: 60px 10px 0 10px;
+  display: flex;
+  transition: all .2s linear;
+  flex-direction: column;
+  overflow: auto;
+  &.minus {
+    height: 50px;
+  }
+  .btn-group {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+}
+
 //侧边栏
 .layout-side {
   position: fixed !important;
