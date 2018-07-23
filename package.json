@@ -28,6 +28,7 @@
     "react-lifecycles-compat": "^3.0.4",
     "react-router": "3.2.0",
     "redux": "^3.7.2",
+    "requirejs": "^2.3.5",
     "socket.io": "^2.0.4",
     "socket.io-emitter": "^3.1.1",
     "socket.io-redis": "^5.2.0"
