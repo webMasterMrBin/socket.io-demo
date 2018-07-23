@@ -13,7 +13,8 @@ module.exports = {
     filename: '[name].js',
     path: path.join(__dirname, '/public/build'),
     publicPath: "./build/",
-    chunkFilename: "[id].js"
+    chunkFilename: "[id].js",
+    libraryTarget: "amd"
   },
   devtool: "source-map",
   module: {
@@ -49,7 +50,8 @@ module.exports = {
       moment: "moment"
 		}),
     new webpack.optimize.CommonsChunkPlugin({
-      name: ["vendor", "manifest"] // 指定模块的名称
+      name: "manifest", // 指定模块的名称
+      chunks: ["vendor"]
     }),
 		extractLESS
   ]

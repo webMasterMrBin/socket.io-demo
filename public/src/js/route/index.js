@@ -5,6 +5,13 @@ import login from "./login";
 import NotFound from "./404";
 import file from "./file";
 import { newComponent } from "./hoc";
+// if (true) {
+//   require("react");
+//   console.log("heheh");
+// }
+// import bar from "./module";
+// require("react");
+// console.log("heheh");
 
 const Test = () => <div>test</div>;
 
@@ -121,6 +128,26 @@ class Lifecycle extends React.Component {
 
 const fuck = () => <Lifecycle />
 
+const module = () => {
+  window.requirejs.config({
+    paths: {
+      endpoint: "/index.js?pluginName=endpoint"
+    }
+  });
+  return (
+    <div>
+      <button onClick={() => {
+          // window.requirejs(["endpoint"], module => {
+          //   console.log("module");
+          // })
+          require("./tmp");
+          // import("./tmp");
+          alert("hello");
+        }}>点我</button>
+    </div>
+  );
+};
+
 const routes = [
   {
     path: "/",
@@ -140,6 +167,10 @@ const routes = [
       {
         path: "hoc",
         component: newComponent
+      },
+      {
+        path: "module",
+        component: module
       },
       file
     ]
