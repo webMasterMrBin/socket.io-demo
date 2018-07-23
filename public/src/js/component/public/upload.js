@@ -40,10 +40,7 @@ class FileUpload extends React.Component {
     } = this.props;
     return (
       <Menu>
-        <Menu.Item
-          disabled={loading && percent !== 100}
-          onClick={() => this.file.current.click()}
-        >
+        <Menu.Item onClick={() => this.file.current.click()}>
           <Icon type="file-add" /> 选择文件
         </Menu.Item>
         <Menu.Item

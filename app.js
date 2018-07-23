@@ -4,6 +4,8 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const redisStore = require("connect-redis")(session);
+const http = require("http");
+const request = require("request");
 
 const app = express();
 const logger = require('morgan');
@@ -53,6 +55,17 @@ app.get("/api/logout", (req, res) => {
   } else {
     res.json({ status: 0, msg: "请确认登录状态" });
   }
+});
+
+app.use((req, res, next) => {
+  console.log("pluginName", req.query.pluginName);
+  if (req.query.pluginName === "endpoint") {
+    console.log("nnnnn");
+    const proxy = request("http://localhost:8000/index.js");
+    req.pipe(proxy);
+    return proxy.pipe(res);
+  }
+  next();
 });
 
 // 引入路由

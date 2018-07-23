@@ -42,8 +42,8 @@ class ProgressControl extends React.Component {
         {_.map(fileProgress, (o, i) => (
           <div key={i} style={{ width: "100%", marginBottom: "10px" }}>
             <Icon type="file" />
-            <span>{o.fileName}</span>
-            <Progress percent={o.percent} status="active" />
+            <span>{i}</span>
+            <Progress percent={o} status="active" />
           </div>
         ))}
       </div>
@@ -52,7 +52,7 @@ class ProgressControl extends React.Component {
 }
 
 ProgressControl.propTypes = {
-  fileProgress: PropTypes.array
+  fileProgress: PropTypes.object.isRequired
 };
 
 module.exports = connect()(ProgressControl);
