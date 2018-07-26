@@ -13,7 +13,7 @@ import { newComponent } from "./hoc";
 // require("react");
 // console.log("heheh");
 
-const Test = () => <div>test</div>;
+const Test = () => <div>66444test111111122222</div>;
 
 const { Provider, Consumer } = React.createContext("defaultValue");
 
