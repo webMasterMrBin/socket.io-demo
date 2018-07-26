@@ -12,6 +12,13 @@ import http from "./reducer/http";
 import home from "./reducer/home";
 import file from "./reducer/file";
 import progress from "./reducer/progress";
+import "../less/index.less";
+// less文件更新HMR
+if (module.hot) {
+  module.hot.accept("../less/index.less", () => {
+    console.log("less文件更新了");
+  })
+}
 
 const reducers = combineReducers({
   form: formReducer,

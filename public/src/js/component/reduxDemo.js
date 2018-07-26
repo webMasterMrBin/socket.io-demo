@@ -6,7 +6,6 @@ import * as action from "../action";
 import { reduxForm, Field, stopSubmit, destroy, unregisterField, registerField } from "redux-form";
 import { InputField } from "./public";
 import { Input } from "antd";
-require("../../less/index.less");
 
 const validate = values => {
   const error = {};
