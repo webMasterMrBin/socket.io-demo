@@ -9,6 +9,7 @@ const request = require("request");
 
 const app = express();
 const logger = require('morgan');
+
 // view engine setup
 app.set('views', path.join(__dirname, 'public/page'));
 
@@ -55,17 +56,6 @@ app.get("/api/logout", (req, res) => {
   } else {
     res.json({ status: 0, msg: "请确认登录状态" });
   }
-});
-
-app.use((req, res, next) => {
-  console.log("pluginName", req.query.pluginName);
-  if (req.query.pluginName === "endpoint") {
-    console.log("nnnnn");
-    const proxy = request("http://localhost:8000/index.js");
-    req.pipe(proxy);
-    return proxy.pipe(res);
-  }
-  next();
 });
 
 // 引入路由
