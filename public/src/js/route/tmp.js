@@ -7,4 +7,4 @@ console.timeEnd("test")
 
 var tmp = 2;
 
-module.exports = tmp;
+export default tmp;

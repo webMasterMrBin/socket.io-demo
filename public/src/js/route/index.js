@@ -129,20 +129,15 @@ class Lifecycle extends React.Component {
 const fuck = () => <Lifecycle />
 
 const module = () => {
-  window.requirejs.config({
-    paths: {
-      endpoint: "/index.js?pluginName=endpoint"
-    }
-  });
   return (
     <div>
       <button onClick={() => {
           // window.requirejs(["endpoint"], module => {
           //   console.log("module");
           // })
-          require("./tmp");
-          // import("./tmp");
-          alert("hello");
+          //require("./tmp");
+          import("./tmp").then(d => console.log("d", d));
+          //alert("hello");
         }}>点我</button>
     </div>
   );

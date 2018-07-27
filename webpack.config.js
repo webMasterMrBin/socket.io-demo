@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const extractLESS = new ExtractTextPlugin('css/[name].css');
 
@@ -54,7 +55,17 @@ const config = {
         test: /\.less$/,
         use: env !== "dev" ? extractLESS.extract({
           fallback: "style-loader",
-          use: ["css-loader", "less-loader"]
+          use: [
+            {
+              loader: "css-loader",
+              options: {
+                minimize: true //css压缩
+              }
+            },
+            {
+              loader: "less-loader"
+            }
+          ]
         }) : ["style-loader", "css-loader", "less-loader"]
       }
     ]
@@ -73,16 +84,19 @@ const config = {
       moment: "moment"
 		}),
     new webpack.optimize.CommonsChunkPlugin({
-      name: "manifest", // 指定模块的名称
-      chunks: ["vendor"]
+      name: ["vendor", "manifest"],
+      minChunks: Infinity,
     }),
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin()
   ]
 };
-
+// 生产环境
 if (env !== "dev") {
   config.plugins.push(extractLESS);
+  config.plugins.push(new UglifyJsPlugin({
+    sourceMap: true
+  }));
 }
 
 module.exports = config;
