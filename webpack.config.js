@@ -9,12 +9,12 @@ const env = process.env.NODE_ENV;
 
 const config = {
   entry: {
-		main: './public/src/js/index.js',
+    main: "./public/src/js/index.js",
     vendor: ["react", "react-dom", "redux", "react-redux", "lodash", "moment"]
   },
   output: {
-    filename: '[name].js',
-    path: path.join(__dirname, '/public/build'),
+    filename: "[name].js",
+    path: path.join(__dirname, "/public/build"),
     publicPath: env === "dev" ? "http://localhost:4001/public/" : "./build/",
     chunkFilename: "[id].js"
   },
@@ -29,7 +29,7 @@ const config = {
         // login请求 走express4000端口代理
         // 浏览器请求(浏览器地址栏直接访/login) 用开发的index.html渲染
         target: "http://localhost:4000",
-        bypass(req, res, proxyOptions) {
+        bypass(req) {
           if (req.headers.accept.indexOf("html") !== -1) {
             console.log("Skipping proxy for browser request.(/login)");
             return "/index.html";
@@ -70,14 +70,11 @@ const config = {
       }
     ]
   },
-	resolve: {
-		modules: [
-			path.join(__dirname, './public/src/js'),
-			'node_modules',
-		]
+  resolve: {
+    modules: [path.join(__dirname, "./public/src/js"), "node_modules"]
 	},
   plugins: [
-		new webpack.ProvidePlugin({
+    new webpack.ProvidePlugin({
       _: "lodash",
       React: "react",
       ReactDOM: "react-dom",
@@ -85,10 +82,13 @@ const config = {
 		}),
     new webpack.optimize.CommonsChunkPlugin({
       name: ["vendor", "manifest"],
-      minChunks: Infinity,
+      minChunks: Infinity
     }),
     new webpack.NamedModulesPlugin(),
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.DefinePlugin({
+      DEV_URL: JSON.stringify("http://localhost:4000")
+    })
   ]
 };
 // 生产环境

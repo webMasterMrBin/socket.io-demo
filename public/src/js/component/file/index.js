@@ -174,7 +174,7 @@ class File extends React.Component {
                 <a
                   onClick={() =>
                     this.setState({
-                      downPath: `/api/downloadFile?filePath=${filePath}&name=${
+                      downPath: `${DEV_URL}/api/downloadFile?filePath=${filePath}&name=${
                         record.name
                       }&diffIframe=${Math.random()}`
                     })
@@ -227,6 +227,14 @@ class File extends React.Component {
     const pathArr = path.split("/").slice(1);
     let sum = "";
     const breadUrl = [];
+    // 加载状态
+    const loadState = !_.isEmpty(loading)
+      ? loading[Object.keys(loading).find(o => o.includes("/api/files"))]
+      : false;
+    // 文件上传
+    const uploadState = !_.isEmpty(loading)
+      ? loading[Object.keys(loading).find(o => o.includes("/api/upload"))]
+      : false;
 
     if (!_.isEmpty(files)) {
       _.forEach(files, (o, i) => {
@@ -282,7 +290,7 @@ class File extends React.Component {
               ? dataSource
               : this.state.dataSource
           }
-          loading={loading}
+          loading={loadState || uploadState}
           onRow={record => {
             return {
               onClick: () => console.log("record", record),
