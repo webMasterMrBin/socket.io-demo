@@ -117,6 +117,7 @@ const ajax = (dispatch, params, options) => {
               type: "PROGRESS_DONE",
               fileName
             });
+            dispatch({ type: "HTTP_SUCCESS", apiName: params.url });
             params.success(JSON.parse(e.target.responseText));
           }
         };
