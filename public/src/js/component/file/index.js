@@ -217,11 +217,11 @@ class File extends React.Component {
 
   render() {
     const {
-      file: { files },
+      file: { files, uploadChunks, fileExis },
       http: { loading },
       location: {
         query: { path }
-      }
+      },
     } = this.props;
     const dataSource = [];
     const pathArr = path.split("/").slice(1);
@@ -252,10 +252,11 @@ class File extends React.Component {
     return (
       <div className="file-system">
         <div className="button-group">
-          <FileUpload />
+          <FileUpload uploadChunks={uploadChunks} fileExis={fileExis} />
           <Button
             disabled={!_.isEmpty(this.state.dataSource)}
             onClick={() => this.createDirector(dataSource)}
+            className="create-dir"
           >
             <Icon type="folder-add" />新建文件夹
           </Button>

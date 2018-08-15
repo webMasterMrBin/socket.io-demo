@@ -138,7 +138,7 @@ const ajax = (dispatch, params, options) => {
       const delay = new Promise((resolve, reject) => {
         setTimeout(() => {
           reject("接口超时");
-        }, 5000);
+        }, 50000);
       });
       const res = await Promise.race([fetch(params.url, options), delay]);
       // http成功的dispatch
