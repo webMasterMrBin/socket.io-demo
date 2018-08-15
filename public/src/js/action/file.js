@@ -22,12 +22,53 @@ function Upload(formData, path) {
       url: `/api/upload?path=${path}`,
       data: formData,
       success: d => {
-        dispatch(ListFiles(path));
+        // 上传了一片(文件小于切片的大小)
+        if (formData.get("total") === "1") {
+          dispatch({
+            type: "FILE_CHUNKS",
+            res: d
+          });
+          // 合并完文件后
+          dispatch(ListFiles(formData.get("webkitRelativePath")));
+        }
         dispatch({
           type: "MESSAGE_OPEN",
           messageOpen: true,
           doneMsg: d.msg
         });
+      }
+    });
+  };
+}
+
+// 检验文件md5判断是否上传过
+function CheckMd5(md5) {
+  return dispatch => {
+    return ajax.get(dispatch, {
+      url: `/api/fileMd5?md5=${md5}`,
+      success(d) {
+        dispatch({
+          type: "FILE_CHUNKS",
+          res: d
+        });
+      }
+    });
+  };
+}
+
+// 上传完所有chunks请求合并文件
+function MergeFile(data) {
+  return dispatch => {
+    return ajax.post(dispatch, {
+      url: "/api/merge",
+      data: JSON.stringify(data),
+      success(d) {
+        dispatch({
+          type: "FILE_CHUNKS",
+          res: d
+        });
+        // 合并完文件后
+        dispatch(ListFiles(data.webkitRelativePath));
       }
     });
   };
@@ -105,5 +146,7 @@ export {
   RemoveFile,
   CreateDir,
   RemoveDir,
-  WindowOpenConfirm
+  WindowOpenConfirm,
+  CheckMd5,
+  MergeFile
 };
