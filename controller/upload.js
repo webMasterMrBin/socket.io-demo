@@ -4,13 +4,19 @@ const moment = require("moment");
 const fs = require("fs");
 const path = require("path");
 const _ = require("lodash");
-const upload = multer({
+const uploadChunk = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, "./uploads/");
+      cb(null, req.body.total === "1" ? "./uploads/" : "./chunks/");
     },
     filename: (req, file, cb) => {
-      cb(null, `${file.fieldname}-${Date.now()}-${req.session.userId}`);
+      console.log("req body", req.body);
+      cb(
+        null,
+        req.body.total === "1"
+          ? `${req.session.userId}-${req.body.fileName}`
+          : `${req.body.index}-${req.body.md5}-${req.session.userId}`
+      );
     }
   })
 }).any();
@@ -34,15 +40,37 @@ function unlink(res, filePath) {
   });
 }
 
+async function saveToMongo(req, res, err) {
+  const { fileName, type, size, webkitRelativePath, md5 } = req.body;
+  try {
+    await db.file.create({
+      fileId: req.session.userId,
+      fileName,
+      path: "/uploads", // multer 已上传文件的完整路径
+      type,
+      modifiedDate: moment().format(),
+      size,
+      webkitRelativePath,
+      md5,
+      isdir: 0
+    });
+    res();
+  } catch (e) {
+    console.log("error", e);
+    err(e);
+  }
+}
+
 module.exports = {
   upload: (req, res) => {
-    upload(req, res, err => {
+    uploadChunk(req, res, err => {
       if (err) {
         console.log("upload err", err);
         res.status(500).json({ msg: err });
       }
       const webkitRelativePath = req.query.path;
       const directoryPath = []; // 上传得文件夹内的路径
+      const { md5, fileName } = req.body;
       // 上传的是文件夹
       if (req.body.uploadWay === "directory") {
         try {
@@ -115,24 +143,99 @@ module.exports = {
         }
       } else {
         // 上传单个文件
-        try {
-          (async () => {
-            await db.file.create({
-              fileId: req.session.userId,
-              fileName: req.files[0].originalname,
-              path: req.files[0].path,
-              type: req.files[0].mimetype,
-              modifiedDate: moment().format(),
-              size: req.files[0].size,
-              webkitRelativePath: webkitRelativePath
-            });
-            res.json({ msg: `文件${req.files[0].originalname}上传成功` });
-          })();
-        } catch (e) {
-          res.status(500).json({ msg: e });
+        if (req.body.total == 1) {
+          saveToMongo(
+            req,
+            () =>
+              res.json({
+                msg: `文件${fileName}上传完成`,
+                exis: true,
+                uploadChunks: []
+              }),
+            e => res.status(500).json({ msg: e })
+          );
+        } else {
+          res.json({
+            msg: `chunk ${req.body.index}-${req.body.md5}-${
+              req.session.userId
+            }上传完成`
+          });
         }
       }
     });
+  },
+
+  mergeFile(req, res) {
+    const { md5, fileName, type, size, webkitRelativePath } = req.body;
+    const chunks = [];
+    const writeable = fs.createWriteStream(
+      `./uploads/${req.session.userId}-${fileName}`
+    );
+    fs.readdir("./chunks", (err, files) => {
+      if (err) {
+        res.status(500).json({ msg: "读取文件chunks list失败" });
+      }
+      const uploadChunks = files.filter(o => o.includes(md5));
+      uploadChunks.forEach(o => {
+        chunks.push(o);
+      });
+
+      // 从chunks里读取内容写到uploads文件中
+      function pipe() {
+        if (!chunks.length) {
+          writeable.end("Done"); // 手动关闭可写流
+          return;
+        }
+        const readable = fs.createReadStream(`./chunks/${chunks.shift()}`);
+        readable.pipe(writeable, { end: false });
+        readable.on("end", () => {
+          pipe();
+        });
+        readable.on("error", () => {
+          res.status(500).json({ msg: "合并文件出错", exis: false, uploadChunks });
+        });
+      }
+
+      pipe();
+
+      saveToMongo(
+        req,
+        () =>
+          res.json({
+            msg: `文件${fileName}合并成功`,
+            exis: true,
+            uploadChunks
+          }),
+        e => res.json({ msg: e })
+      );
+    });
+  },
+
+  fileMd5: async (req, res) => {
+    try {
+      const { md5 } = req.query;
+      const result = await db.file.find({
+        fileId: req.session.userId,
+        md5: md5
+      });
+      fs.readdir("./chunks", (err, files) => {
+        const chunks = files.filter(o => o.includes(md5));
+        if (err) {
+          res.status(500).json({ msg: "读取file chunks失败" });
+        }
+        if (_.isEmpty(result)) {
+          res.json({ msg: "文件md5不存在", exis: false, uploadChunks: chunks });
+        } else {
+          res.json({
+            msg: "文件已上传, 存在md5",
+            exis: true,
+            uploadChunks: chunks
+          });
+        }
+      });
+    } catch (e) {
+      res.status(500).json({ msg: e });
+    }
   },
 
   // list 当前路径所有文件
@@ -144,7 +247,7 @@ module.exports = {
         .populate("fileId");
       res.json({ msg: "list file done", fileList: result });
     } catch (e) {
-      res.status(500).json({ msg: e });
+      res.status(500).json("服务器错误");
     }
   },
 

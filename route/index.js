@@ -30,6 +30,9 @@ module.exports = app => {
   app.get("/api/downloadFile", apiAuth, file.download);
   app.post("/api/directory", apiAuth, file.createDir);
   app.delete("/api/directory", apiAuth, file.removeDir);
+  // get file md5
+  app.get("/api/fileMd5", apiAuth, file.fileMd5);
+  app.post("/api/merge", apiAuth, file.mergeFile);
   // 独立的登录页面 session过期或不存在都会重定向到这
   app.get(
     "/login",

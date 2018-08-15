@@ -9,7 +9,8 @@ const fileSchema = mongoose.Schema({
   size: Number,
   webkitRelativePath: String,
   isDir: Number,
-  date: { type: Date, default: Date.now }
+  date: { type: Date, default: Date.now },
+  md5: String
 });
 
 const file = mongoose.model("file", fileSchema);
