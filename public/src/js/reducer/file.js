@@ -1,7 +1,8 @@
 const initialState = {
   files: [], // 保存当前用户files信息
   uploadChunks: [], // 已上传的chunks
-  fileExis: false // 文件是否存在且信息存到mongo
+  fileExis: false, // 文件是否存在且信息存到mongo
+  fileBroken: false // chunk是否完整
 };
 
 export default (state = initialState, action) => {
@@ -13,8 +14,9 @@ export default (state = initialState, action) => {
     case "FILE_CHUNKS":
       return {
         ...state,
-        uploadChunks: [...state.uploadChunks, ...action.res.uploadChunks],
-        fileExis: action.res.exis
+        uploadChunks: action.res.uploadChunks,
+        fileExis: action.res.exis,
+        fileBroken: action.res.broken
       };
     default:
       return state;
