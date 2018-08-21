@@ -10,7 +10,6 @@ const uploadChunk = multer({
       cb(null, req.body.total === "1" ? "./uploads/" : "./chunks/");
     },
     filename: (req, file, cb) => {
-      console.log("req body", req.body);
       cb(
         null,
         req.body.total === "1"
@@ -143,6 +142,7 @@ module.exports = {
         }
       } else {
         // 上传单个文件
+        // 只有一个chunk
         if (req.body.total == 1) {
           saveToMongo(
             req,
@@ -150,7 +150,8 @@ module.exports = {
               res.json({
                 msg: `文件${fileName}上传完成`,
                 exis: true,
-                uploadChunks: []
+                uploadChunks: [],
+                broken: false
               }),
             e => res.status(500).json({ msg: e })
           );
@@ -166,8 +167,7 @@ module.exports = {
   },
 
   mergeFile(req, res) {
-    const { md5, fileName, type, size, webkitRelativePath } = req.body;
-    const chunks = [];
+    const { fileName, type, size, webkitRelativePath, md5 } = req.body;
     const writeable = fs.createWriteStream(
       `./uploads/${req.session.userId}-${fileName}`
     );
@@ -175,39 +175,53 @@ module.exports = {
       if (err) {
         res.status(500).json({ msg: "读取文件chunks list失败" });
       }
-      const uploadChunks = files.filter(o => o.includes(md5));
-      uploadChunks.forEach(o => {
-        chunks.push(o);
+      // 排序过的chunks
+      const uploadChunks = files.filter(o => o.includes(md5)).sort((a, b) => {
+        return a.split("-")[0] - b.split("-")[0];
       });
 
-      // 从chunks里读取内容写到uploads文件中
-      function pipe() {
+      const chunks = _.cloneDeep(uploadChunks);
+
+      /* 从chunks里读取内容写到uploads文件中
+        node合并文件该功能代码参考https://blog.ragingflame.co.za/2013/5/31/using-nodejs-to-join-audio-files
+      */
+      async function pipe() {
         if (!chunks.length) {
-          writeable.end("Done"); // 手动关闭可写流
-          return;
+          writeable.end(); // 手动关闭可写流
+          console.log("最后一个chunk 上传完毕");
+          await Promise.all(
+            uploadChunks.map(o => unlink(res, `./chunks/${o}`))
+          );
+          await db.file.create({
+            fileId: req.session.userId,
+            fileName,
+            path: "/uploads", // multer 已上传文件的完整路径
+            type,
+            modifiedDate: moment().format(),
+            size,
+            webkitRelativePath,
+            md5,
+            isdir: 0
+          });
+          return res.json({
+            msg: `文件${fileName}上传完成`,
+            exis: true,
+            uploadChunks: [],
+            broken: false
+          });
+        } else {
+          const readable = fs.createReadStream(`./chunks/${chunks.shift()}`);
+          readable.pipe(writeable, { end: false });
+          readable.on("end", () => {
+            pipe();
+          });
+          readable.on("error", () => {
+            res.status(500).json({ msg: "合并文件出错", exis: false, uploadChunks, broken: true });
+          });
         }
-        const readable = fs.createReadStream(`./chunks/${chunks.shift()}`);
-        readable.pipe(writeable, { end: false });
-        readable.on("end", () => {
-          pipe();
-        });
-        readable.on("error", () => {
-          res.status(500).json({ msg: "合并文件出错", exis: false, uploadChunks });
-        });
       }
 
       pipe();
-
-      saveToMongo(
-        req,
-        () =>
-          res.json({
-            msg: `文件${fileName}合并成功`,
-            exis: true,
-            uploadChunks
-          }),
-        e => res.json({ msg: e })
-      );
     });
   },
 
@@ -219,17 +233,40 @@ module.exports = {
         md5: md5
       });
       fs.readdir("./chunks", (err, files) => {
-        const chunks = files.filter(o => o.includes(md5));
+        const chunks = files.filter(o => o.includes(md5)).sort((a, b) => {
+          return a.split("-")[0] - b.split("-")[0];
+        });
         if (err) {
           res.status(500).json({ msg: "读取file chunks失败" });
         }
+
         if (_.isEmpty(result)) {
-          res.json({ msg: "文件md5不存在", exis: false, uploadChunks: chunks });
+          if (!_.isEmpty(chunks)) {
+            fs.stat(`./chunks/${chunks[chunks.length - 1]}`, (err, data) => {
+              if (err) {
+                res.status(500).json({ msg: "读取file chunk size失败" });
+              }
+              res.json({
+                msg: "文件md5不存在",
+                exis: false,
+                uploadChunks: chunks,
+                broken: data.size < 10 * 1024 * 1024 ? true : false
+              });
+            });
+          } else {
+            res.json({
+              msg: "文件md5不存在",
+              exis: false,
+              uploadChunks: chunks,
+              broken: false
+            });
+          }
         } else {
           res.json({
             msg: "文件已上传, 存在md5",
             exis: true,
-            uploadChunks: chunks
+            uploadChunks: chunks,
+            broken: false
           });
         }
       });
