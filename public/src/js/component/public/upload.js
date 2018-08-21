@@ -47,10 +47,10 @@ class FileUpload extends React.Component {
     formData.append("total", chunks); // 总片数
     formData.append("index", i); // 当前的是第几片
     formData.append("md5", this.state.md5);
-    formData.append("fileName", fileName); // 文件名字
-    formData.append("size", size);
-    formData.append("webkitRelativePath", webkitRelativePath);
-    formData.append("type", type);
+    fileName && formData.append("fileName", fileName); // 文件名字
+    size && formData.append("size", size);
+    webkitRelativePath && formData.append("webkitRelativePath", webkitRelativePath);
+    type && formData.append("type", type);
     // 要把文件对象放在最后append 否则 multer插件自定义文件名字时 req.body为{}
     formData.append("file", file.slice(chunkSize * i, chunkSize * (i + 1)));
   };
@@ -64,10 +64,11 @@ class FileUpload extends React.Component {
         query: { path }
       },
       uploadChunks,
-      fileExis
+      fileExis,
+      fileBroken
     } = this.props;
     const file = this.file.current.files[0];
-    const chunkSize = 1 * 1024 * 1024; // 每次上传10MB
+    const chunkSize = 10 * 1024 * 1024; // 每次上传10MB
     // 上传的总的文件大小
     const fileSize = file.size;
     // 一共上传的请求次数
@@ -93,20 +94,33 @@ class FileUpload extends React.Component {
         (async () => {
           if (!_.isEmpty(uploadChunks)) {
             // 存在已经上传的chunks(续传)
-            const lastChunk = uploadChunks[uploadChunks.length - 1].split("-")[0];
-            if (lastChunk < chunks) {
-              for (let i = lastChunk; i < chunks; i++) {
-                const formData = new FormData();
-                this.uploadChunk({
-                  chunks,
-                  i,
-                  chunkSize,
-                  file,
-                  formData
-                });
-                // 串行传输 所以chunks按照顺序排e.g 0-...,1-...,2-...
-                await Upload(formData, path);
-              }
+            // 已经上传的chunks
+            const uploaded = uploadChunks.map(o => parseFloat(o.split("-")[0]));
+
+            const totalChunks = [];
+            for (let i = 0; i < chunks; i++) {
+              totalChunks.push(i);
+            }
+
+            // 找到还没上传的chunks
+            const readyToChunks = totalChunks.filter(o => !uploaded.includes(o));
+
+            if (fileBroken) {
+              readyToChunks.unshift(
+                uploadChunks[uploadChunks.length - 1].split("-")[0]
+              );
+            }
+
+            for (let i = 0; i < readyToChunks.length; i++) {
+              const formData = new FormData();
+              this.uploadChunk({
+                chunks,
+                i: readyToChunks[i],
+                chunkSize,
+                file,
+                formData
+              });
+              await Upload(formData, path);
             }
           } else {
             // 没有上传过chunks,从头开始传
@@ -149,23 +163,31 @@ class FileUpload extends React.Component {
     // 发一次请求确认该文件是否上传过，服务器有记录则实现秒传, 有部分记录则续传
     // NOTE 使用md5判断文件唯一性
     // 获取文件MD5
+    // NOTE browserMD5File 在选中文件后再次选择文件时点取消 报错
+    // TODO 改用原生的js-spark-md5插件 可以支持获取md5进度
     const file = this.file.current.files[0];
     console.log("file", file);
     this.setState(() => {
         return {
           loadingMd5: true,
           chooseFile: true,
-          fileName: file.name
+          fileName: file ? file.name : ""
         };
       },
       () => {
         browserMD5File(file, (err, data) => {
-          CheckMd5(data).then(() => {
+          if (err) {
             this.setState({
-              loadingMd5: false,
-              md5: data
+              fileName: "获取文件md5失败, 请重试"
+            })
+          } else {
+            CheckMd5(data).then(() => {
+              this.setState({
+                loadingMd5: false,
+                md5: data
+              });
             });
-          });
+          }
         });
       }
     );

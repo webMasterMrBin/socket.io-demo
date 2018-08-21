@@ -217,7 +217,7 @@ class File extends React.Component {
 
   render() {
     const {
-      file: { files, uploadChunks, fileExis },
+      file: { files, uploadChunks, fileExis, fileBroken },
       http: { loading },
       location: {
         query: { path }
@@ -252,7 +252,11 @@ class File extends React.Component {
     return (
       <div className="file-system">
         <div className="button-group">
-          <FileUpload uploadChunks={uploadChunks} fileExis={fileExis} />
+          <FileUpload
+            uploadChunks={uploadChunks}
+            fileExis={fileExis}
+            fileBroken={fileBroken}
+          />
           <Button
             disabled={!_.isEmpty(this.state.dataSource)}
             onClick={() => this.createDirector(dataSource)}

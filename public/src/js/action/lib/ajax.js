@@ -72,65 +72,65 @@ const ajax = (dispatch, params, options) => {
   }
   */
 
-  if (options.progress) {
-    console.log("options", options);
-    const fileName = options.body.get("file").name
-
-    const uploadProgress = e => {
-      if (e.lengthComputable) {
-        const percent = Math.round(e.loaded / e.total * 100);
-        dispatch({
-          type: "PROGRESS_INCREASE",
-          percent,
-          fileName
-        });
-      }
-    };
-
-    // xhr实现文件上传progress
-    const fetchProgress = (url, options) => {
-      return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open(options.method, url);
-        // 设置请求头
-        _.forEach(options.headers, (o, i) => {
-          xhr.setRequestHeader(i, o);
-        });
-        xhr.onloadstart = () => {
-          console.log("响应开始 收到第一个字节");
-          // 打开下载进度组件框
-          dispatch({
-            type: "PROGRESS_OPEN",
-            progressOpen: true,
-            fileName
-          });
-        };
-        xhr.onload = e => {
-          console.log("响应结束 已经收到完整的响应数据");
-          resolve(e.target.responseText);
-        };
-        xhr.onerror = reject;
-        xhr.upload.onprogress = uploadProgress;
-        xhr.onreadystatechange = e => {
-          if (e.target.readyState === 4) {
-            dispatch({
-              type: "PROGRESS_DONE",
-              fileName
-            });
-            dispatch({ type: "HTTP_SUCCESS", apiName: params.url });
-            params.success(JSON.parse(e.target.responseText));
-          }
-        };
-        xhr.send(options.body);
-        console.log("xhr", xhr);
-        // 确保有返回值切为promise
-        if (xhr.responseText) {
-          return resolve(JSON.parse(xhr.responseText));
-        }
-      });
-    };
-    return fetchProgress(params.url, options);
-  }
+  // if (options.progress) {
+  //   console.log("options", options);
+  //   const fileName = options.body.get("file").name
+  //
+  //   const uploadProgress = e => {
+  //     if (e.lengthComputable) {
+  //       const percent = Math.round(e.loaded / e.total * 100);
+  //       dispatch({
+  //         type: "PROGRESS_INCREASE",
+  //         percent,
+  //         fileName
+  //       });
+  //     }
+  //   };
+  //
+  //   // xhr实现文件上传progress
+  //   const fetchProgress = (url, options) => {
+  //     return new Promise((resolve, reject) => {
+  //       const xhr = new XMLHttpRequest();
+  //       xhr.open(options.method, url);
+  //       // 设置请求头
+  //       _.forEach(options.headers, (o, i) => {
+  //         xhr.setRequestHeader(i, o);
+  //       });
+  //       xhr.onloadstart = () => {
+  //         console.log("响应开始 收到第一个字节");
+  //         // 打开下载进度组件框
+  //         dispatch({
+  //           type: "PROGRESS_OPEN",
+  //           progressOpen: true,
+  //           fileName
+  //         });
+  //       };
+  //       xhr.onload = e => {
+  //         console.log("响应结束 已经收到完整的响应数据");
+  //         resolve(e.target.responseText);
+  //       };
+  //       xhr.onerror = reject;
+  //       xhr.upload.onprogress = uploadProgress;
+  //       xhr.onreadystatechange = e => {
+  //         if (e.target.readyState === 4) {
+  //           dispatch({
+  //             type: "PROGRESS_DONE",
+  //             fileName
+  //           });
+  //           dispatch({ type: "HTTP_SUCCESS", apiName: params.url });
+  //           params.success(JSON.parse(e.target.responseText));
+  //         }
+  //       };
+  //       xhr.send(options.body);
+  //       console.log("xhr", xhr);
+  //       // 确保有返回值切为promise
+  //       if (xhr.responseText) {
+  //         return resolve(JSON.parse(xhr.responseText));
+  //       }
+  //     });
+  //   };
+  //   return fetchProgress(params.url, options);
+  // }
 
   return (async () => {
     try {
