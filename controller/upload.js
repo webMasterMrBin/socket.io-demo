@@ -4,6 +4,8 @@ const moment = require("moment");
 const fs = require("fs");
 const path = require("path");
 const _ = require("lodash");
+const { promisify } = require("util");
+
 const uploadChunk = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
@@ -227,7 +229,8 @@ module.exports = {
 
   fileMd5: async (req, res) => {
     try {
-      const { md5 } = req.query;
+      const { md5, fileSize } = req.query;
+      const statAsync = promisify(fs.stat);
       const result = await db.file.find({
         fileId: req.session.userId,
         md5: md5
@@ -242,15 +245,14 @@ module.exports = {
 
         if (_.isEmpty(result)) {
           if (!_.isEmpty(chunks)) {
-            fs.stat(`./chunks/${chunks[chunks.length - 1]}`, (err, data) => {
-              if (err) {
-                res.status(500).json({ msg: "读取file chunk size失败" });
-              }
+            // 找到chunks里所有文件大小总和比较是否上传完整
+            Promise.all(chunks.map(o => statAsync(`./chunks/${o}`))).then(data => {
+              const sum = data.reduce((a, b) => a + b.size, 0);
               res.json({
                 msg: "文件md5不存在",
                 exis: false,
                 uploadChunks: chunks,
-                broken: data.size < 10 * 1024 * 1024 ? true : false
+                broken: sum !== fileSize ? true : false
               });
             });
           } else {
