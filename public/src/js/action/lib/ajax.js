@@ -44,7 +44,7 @@ const ajax = (dispatch, params, options) => {
 
   // fetch progress(只支持get请求response.body)
   /*
-    流模式readable streams 参考https://jakearchibald.com/2016/streams-ftw/
+    NOTE 流模式readable streams 参考https://jakearchibald.com/2016/streams-ftw/
   */
   /*
   if (options.progress) {

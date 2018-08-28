@@ -5,13 +5,6 @@ import login from "./login";
 import NotFound from "./404";
 import file from "./file";
 import { newComponent } from "./hoc";
-// if (true) {
-//   require("react");
-//   console.log("heheh");
-// }
-// import bar from "./module";
-// require("react");
-// console.log("heheh");
 
 const Test = () => <div>66444test111111122222</div>;
 

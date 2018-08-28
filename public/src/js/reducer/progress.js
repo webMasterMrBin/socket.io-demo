@@ -11,7 +11,7 @@ export default (state = initialState, action) => {
         progressOpen: action.progressOpen,
         fileProgress: {
           ...state.fileProgress,
-          [action.fileName]: 0
+          [action.fileName]: action.chunk
         }
       };
     }
