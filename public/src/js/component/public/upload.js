@@ -65,7 +65,9 @@ class FileUpload extends React.Component {
       },
       uploadChunks,
       fileExis,
-      fileBroken
+      fileBroken,
+      ProgressOpen,
+      ProgressIncrease
     } = this.props;
     const file = this.file.current.files[0];
     const chunkSize = 10 * 1024 * 1024; // 每次上传10MB
@@ -95,6 +97,7 @@ class FileUpload extends React.Component {
           if (!_.isEmpty(uploadChunks)) {
             // 存在已经上传的chunks(续传)
             // 已经上传的chunks
+            // TODO 增加一个按钮, 点击暂停下载进度, 再次点击续传
             const uploaded = uploadChunks.map(o => parseFloat(o.split("-")[0]));
 
             const totalChunks = [];
@@ -107,11 +110,13 @@ class FileUpload extends React.Component {
 
             if (fileBroken) {
               readyToChunks.unshift(
-                uploadChunks[uploadChunks.length - 1].split("-")[0]
+                parseFloat(uploadChunks[uploadChunks.length - 1].split("-")[0])
               );
             }
-
-            for (let i = 0; i < readyToChunks.length; i++) {
+            // 已经上传到哪个chunk了
+            let progressChunk = uploaded[uploaded.length - 1]
+            ProgressOpen(file.name, Math.ceil((progressChunk + 1) / chunks * 100));
+            for (let i = 0; i < readyToChunks.length; i++, progressChunk++) {
               const formData = new FormData();
               this.uploadChunk({
                 chunks,
@@ -120,9 +125,14 @@ class FileUpload extends React.Component {
                 file,
                 formData
               });
-              await Upload(formData, path);
+              //await Upload(formData, path);
+              await new Promise(resolve => {
+                setTimeout(() => resolve(), 1000);
+              });
+              ProgressIncrease(Math.ceil((progressChunk + 1) / chunks * 100), file.name);
             }
           } else {
+            ProgressOpen(file.name);
             // 没有上传过chunks,从头开始传
             for (let i = 0; i < chunks; i++) {
               const formData = new FormData();
@@ -135,6 +145,7 @@ class FileUpload extends React.Component {
               });
               // 串行传输 所以chunks按照顺序排e.g 0-...,1-...,2-...
               await Upload(formData, path);
+              ProgressIncrease(Math.ceil((i + 1) / chunks * 100), file.name);
             }
           }
           // 请求合并文件(所有的chunks都上传完)
@@ -181,7 +192,7 @@ class FileUpload extends React.Component {
               fileName: "获取文件md5失败, 请重试"
             })
           } else {
-            CheckMd5(data).then(() => {
+            CheckMd5(data, file.size).then(() => {
               this.setState({
                 loadingMd5: false,
                 md5: data
@@ -214,6 +225,7 @@ class FileUpload extends React.Component {
   };
 
   render() {
+    console.log("this.state", this.state);
     return (
       <div>
         <div className="u-upload">

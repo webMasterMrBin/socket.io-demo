@@ -1,8 +1,10 @@
-var bar = "fuck";
+// m1.js
+var foo = 'bar';
+function change() {
+  foo = "baz";
+  return foo
+}
+export { foo };
 
-setTimeout(() => {
-  bar = "you";
-  console.log("执行module!");
-}, 3000);
-
-export { bar };
+export default change();
+//setTimeout(() => foo = 'baz', 500);

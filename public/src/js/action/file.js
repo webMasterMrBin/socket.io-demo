@@ -1,6 +1,6 @@
 import * as ajax from "./lib/ajax";
 import { browserHistory } from "react-router";
-import { WindowOpenConfirm } from "./home";
+export * from "./home";
 
 function ListFiles(path) {
   return dispatch => {
@@ -31,21 +31,16 @@ function Upload(formData, path) {
           // 合并完文件后
           dispatch(ListFiles(formData.get("webkitRelativePath")));
         }
-        dispatch({
-          type: "MESSAGE_OPEN",
-          messageOpen: true,
-          doneMsg: d.msg
-        });
       }
     });
   };
 }
 
 // 检验文件md5判断是否上传过
-function CheckMd5(md5) {
+function CheckMd5(md5, fileSize) {
   return dispatch => {
     return ajax.get(dispatch, {
-      url: `/api/fileMd5?md5=${md5}`,
+      url: `/api/fileMd5?md5=${md5}&fileSize=${fileSize}`,
       success(d) {
         dispatch({
           type: "FILE_CHUNKS",
@@ -146,7 +141,6 @@ export {
   RemoveFile,
   CreateDir,
   RemoveDir,
-  WindowOpenConfirm,
   CheckMd5,
   MergeFile
 };
