@@ -4,13 +4,11 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const redisStore = require("connect-redis")(session);
-const http = require("http");
-const request = require("request");
-
 const app = express();
 const logger = require('morgan');
+const methods = [ 'get', 'post', 'put', 'delete' ];
 
-// view engine setup
+// view engine se"get", "post", "put", "delete"
 app.set('views', path.join(__dirname, 'public/page'));
 
 app.set('view engine', 'ejs');
@@ -57,6 +55,26 @@ app.get("/api/logout", (req, res) => {
     res.json({ status: 0, msg: "请确认登录状态" });
   }
 });
+
+// NOTE http://liu-xin.me/2017/10/07/%E8%AE%A9Express%E6%94%AF%E6%8C%81async-await/
+// express支持 async await 的错误捕获  使得不用每个方法try..catch
+for (let method of methods) {
+  app[method] = function(...data) {
+    if (method === 'get' && data.length === 1) return app.set(data[0]);
+    const params = [];
+    for (let item of data) {
+      if (Object.prototype.toString.call(item) !== '[object AsyncFunction]') {
+        params.push(item);
+        continue;
+      }
+      const handle = function(...data) {
+        const [ req, res, next ] = data;
+        item(req, res, next).then(next).catch(next);
+      };
+      params.push(handle);
+    }
+  };
+}
 
 // 引入路由
 require('./route')(app);
