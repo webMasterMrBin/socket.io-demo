@@ -29,9 +29,19 @@ const reducers = combineReducers({
   progress
 });
 
-const store = createStore(reducers, applyMiddleware(thunk, promiseMiddleware, createLogger({collapsed: true})));
+const store = createStore(
+  reducers,
+  redux_logger !== "production"
+    ? applyMiddleware(
+        thunk,
+        promiseMiddleware,
+        createLogger({ collapsed: true })
+      )
+    : applyMiddleware(thunk, promiseMiddleware)
+);
 
-console.log("初始化 getState", store.getState());
+// 开发环境查看state初始值
+//console.log("初始化 getState", store.getState());
 
 // 每次 state 更新时，打印日志
 // 注意 subscribe() 返回一个函数用来注销监听器
