@@ -177,7 +177,6 @@ class FileUpload extends React.Component {
     // NOTE browserMD5File 在选中文件后再次选择文件时点取消 报错
     // TODO 改用原生的js-spark-md5插件 可以支持获取md5进度
     const file = this.file.current.files[0];
-    console.log("file", file);
     this.setState(() => {
         return {
           loadingMd5: true,
@@ -225,7 +224,6 @@ class FileUpload extends React.Component {
   };
 
   render() {
-    console.log("this.state", this.state);
     return (
       <div>
         <div className="u-upload">

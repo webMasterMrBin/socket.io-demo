@@ -7,6 +7,8 @@ const extractLESS = new ExtractTextPlugin('css/[name].css');
 
 const env = process.env.NODE_ENV;
 
+console.log("env", env);
+
 const config = {
   entry: {
     main: "./public/src/js/index.js",
@@ -87,7 +89,11 @@ const config = {
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.DefinePlugin({
-      DEV_URL: JSON.stringify("http://localhost:4000")
+      DEV_URL: JSON.stringify("http://localhost:4000"),
+      "process.env": {
+        NODE_ENV: JSON.stringify(env)
+      },
+      redux_logger: JSON.stringify(env)
     })
   ]
 };
