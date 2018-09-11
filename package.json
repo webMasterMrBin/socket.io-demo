@@ -13,6 +13,17 @@
   },
   "author": "",
   "license": "ISC",
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "dependencies": {
     "antd": "^3.6.3",
     "babel-runtime": "^6.26.0",
@@ -64,8 +75,10 @@
     "eslint-plugin-prettier": "^2.6.0",
     "eslint-plugin-react": "^7.7.0",
     "extract-text-webpack-plugin": "^2.1.2",
+    "husky": "^1.0.0-rc.13",
     "less": "^3.0.4",
     "less-loader": "^4.1.0",
+    "lint-staged": "^7.2.2",
     "postcss-loader": "^2.1.5",
     "prettier": "^1.12.1",
     "react": "^16.4.0",
