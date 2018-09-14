@@ -1,23 +1,22 @@
 const db = require("../model");
 
 const mod = {
-  register: async (req, res, next) => {
+  register: async (req, res) => {
     const { userName, userPwd } = req.body;
     try {
       const userInfo = await db.user.findOne({ userName });
       if (!userInfo) {
-        const result = await db.user.create({ userName, userPwd });
-        console.log("result", result);
+        await db.user.create({ userName, userPwd });
         res.json({ status: 1, msg: "注册成功, 请重新登录" });
       } else {
-        res.json({ status: 0, msg: "注册失败, 用户名已存在"});
+        res.json({ status: 0, msg: "注册失败, 用户名已存在" });
       }
     } catch (e) {
       res.json(e);
     }
   },
 
-  login: async (req, res, next) => {
+  login: async (req, res) => {
     try {
       const { userName, userPwd } = req.body;
       const userInfo = await db.user.findOne({ userName });
@@ -27,7 +26,6 @@ const mod = {
         Object.keys(userInfo).length !== 0 &&
         userPwd === userInfo.userPwd
       ) {
-        res.cookie("userName", userName, { maxAge: 1000 * 60 * 60 * 8 });
         if (!req.session.userName) {
           req.session.userName = userName;
           req.session.userId = userInfo._id;
@@ -40,12 +38,8 @@ const mod = {
           });
         }
       } else {
-        res.json({ status: 0, msg: "登录失败, 用户名或密码不正确"});
+        res.json({ status: 0, msg: "登录失败, 用户名或密码不正确" });
       }
-
-      console.log("cookie", req.cookies);
-      console.log("req.session", req.session);
-      console.log("req.session.id", req.session.id);
     } catch (e) {
       res.json({ errMsg: e });
     }
@@ -60,13 +54,12 @@ const mod = {
         });
         res.json({ status: 1, userInfo });
       } else {
-        res.json({ status: 0, msg: "请重新登录" })
+        res.json({ status: 0, msg: "请重新登录" });
       }
     } catch (e) {
       res.json({ errMsg: e });
     }
   }
-
 };
 
 module.exports = mod;

@@ -1,4 +1,3 @@
-import Demo from "component/reduxDemo";
 import { createStore, combineReducers, applyMiddleware } from "redux";
 import { user } from "./reducer/user";
 import thunk from "redux-thunk";
@@ -6,7 +5,7 @@ import { createLogger } from "redux-logger";
 import promiseMiddleware from "redux-promise";
 import { Provider } from "react-redux";
 import { reducer as formReducer } from "redux-form";
-import { Router, browserHistory, Route } from "react-router";
+import { Router, browserHistory } from "react-router";
 import { routes } from "./route";
 import http from "./reducer/http";
 import home from "./reducer/home";
@@ -16,8 +15,8 @@ import "../less/index.less";
 // less文件更新HMR
 if (module.hot) {
   module.hot.accept("../less/index.less", () => {
-    console.log("less文件更新了");
-  })
+    //console.log("less文件更新了");
+  });
 }
 
 const reducers = combineReducers({
@@ -45,12 +44,11 @@ const store = createStore(
 
 // 每次 state 更新时，打印日志
 // 注意 subscribe() 返回一个函数用来注销监听器
-const unsubscribe = store.subscribe(() =>
-  console.log(store.getState())
-)
+store.subscribe(() => console.log(store.getState()));
 
 ReactDOM.render(
-	<Provider store={store}>
+  <Provider store={store}>
     <Router history={browserHistory} routes={routes} />
-	</Provider>, document.getElementById('global')
+  </Provider>,
+  document.getElementById("global")
 );
