@@ -3,10 +3,11 @@ import WindowOpen from "./windowOpen";
 import MessageOpen from "./messageOpen";
 import { bindActionCreators } from "redux";
 import * as userAction from "action/user";
-import { Layout, Menu, Icon, Dropdown, Button } from "antd";
+import { Layout, Menu, Icon, Dropdown } from "antd";
 import PropTypes from "prop-types";
 import { Link } from "react-router";
 import ProgressControl from "./progress";
+import SIDE from "./side";
 const { Header, Sider, Content } = Layout;
 
 class Main extends React.Component {
@@ -44,18 +45,14 @@ class Main extends React.Component {
         <Sider className="layout-side">
           sider
           <Menu theme="dark" mode="inline">
-            <Menu.Item key="1">
-              <Link to="/">
-                <Icon type="user" />
-                <span>首页</span>
-              </Link>
-            </Menu.Item>
-            <Menu.Item key="2">
-              <Link to="/file?path=/">
-                <Icon type="file" />
-                <span>文件系统</span>
-              </Link>
-            </Menu.Item>
+            {SIDE.map(o => (
+              <Menu.Item key={o.key}>
+                <Link to={o.url}>
+                  <Icon type="user" />
+                  <span>{o.name}</span>
+                </Link>
+              </Menu.Item>
+            ))}
           </Menu>
         </Sider>
         <Layout>
@@ -86,6 +83,16 @@ class Main extends React.Component {
     );
   }
 }
+
+Main.propTypes = {
+  windowOpen: PropTypes.bool,
+  errMsg: PropTypes.string,
+  messageOpen: PropTypes.bool,
+  doneMsg: PropTypes.string,
+  confirm: PropTypes.bool,
+  confirmMsg: PropTypes.string,
+  confirmFunc: PropTypes.func
+};
 
 module.exports = connect(
   state => ({

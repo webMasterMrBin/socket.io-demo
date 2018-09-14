@@ -13,7 +13,8 @@ module.exports = {
     "_": true,
     "IcoPath": true,
     "i18n": true,
-    "moment": true
+    "moment": true,
+    "redux_logger": true
   },
   "settings": {
     "import/resolver": {
@@ -25,7 +26,8 @@ module.exports = {
   },
   "rules": {
     "react/prop-types": "warn",
-    "prettier/prettier": "error"
+    "prettier/prettier": "error",
+    "no-console": "off"
   },
   "parserOptions": {
     "ecmaVersion": 6,
