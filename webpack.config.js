@@ -1,13 +1,11 @@
-const webpack = require('webpack');
-const path = require('path');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const webpack = require("webpack");
+const path = require("path");
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
-const extractLESS = new ExtractTextPlugin('css/[name].css');
+const extractLESS = new ExtractTextPlugin("css/[name].css");
 
 const env = process.env.NODE_ENV;
-
-console.log("env", env);
 
 const config = {
   entry: {
@@ -55,33 +53,36 @@ const config = {
       },
       {
         test: /\.less$/,
-        use: env !== "dev" ? extractLESS.extract({
-          fallback: "style-loader",
-          use: [
-            {
-              loader: "css-loader",
-              options: {
-                minimize: true //css压缩
-              }
-            },
-            {
-              loader: "less-loader"
-            }
-          ]
-        }) : ["style-loader", "css-loader", "less-loader"]
+        use:
+          env !== "dev"
+            ? extractLESS.extract({
+                fallback: "style-loader",
+                use: [
+                  {
+                    loader: "css-loader",
+                    options: {
+                      minimize: true //css压缩
+                    }
+                  },
+                  {
+                    loader: "less-loader"
+                  }
+                ]
+              })
+            : ["style-loader", "css-loader", "less-loader"]
       }
     ]
   },
   resolve: {
     modules: [path.join(__dirname, "./public/src/js"), "node_modules"]
-	},
+  },
   plugins: [
     new webpack.ProvidePlugin({
       _: "lodash",
       React: "react",
       ReactDOM: "react-dom",
       moment: "moment"
-		}),
+    }),
     new webpack.optimize.CommonsChunkPlugin({
       name: ["vendor", "manifest"],
       minChunks: Infinity
@@ -100,9 +101,11 @@ const config = {
 // 生产环境
 if (env !== "dev") {
   config.plugins.push(extractLESS);
-  config.plugins.push(new UglifyJsPlugin({
-    sourceMap: true
-  }));
+  config.plugins.push(
+    new UglifyJsPlugin({
+      sourceMap: true
+    })
+  );
 }
 
 module.exports = config;
