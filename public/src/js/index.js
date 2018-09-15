@@ -10,6 +10,7 @@ import { routes } from "./route";
 import http from "./reducer/http";
 import home from "./reducer/home";
 import file from "./reducer/file";
+import chat from "./reducer/chat";
 import progress from "./reducer/progress";
 import "../less/index.less";
 // less文件更新HMR
@@ -25,7 +26,8 @@ const reducers = combineReducers({
   http,
   home,
   file,
-  progress
+  progress,
+  chat
 });
 
 const store = createStore(
