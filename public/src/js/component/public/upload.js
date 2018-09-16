@@ -21,7 +21,12 @@ class FileUpload extends React.Component {
 
   // 上传文件夹
   onDirChange = () => {
-    const { Upload, location: { query: { path } } } = this.props;
+    const {
+      Upload,
+      location: {
+        query: { path }
+      }
+    } = this.props;
     const formData = new FormData();
     formData.append("uploadWay", "directory");
     _.forEach(this.directory.current.files, (o, i) => {
@@ -49,7 +54,8 @@ class FileUpload extends React.Component {
     formData.append("md5", this.state.md5);
     fileName && formData.append("fileName", fileName); // 文件名字
     size && formData.append("size", size);
-    webkitRelativePath && formData.append("webkitRelativePath", webkitRelativePath);
+    webkitRelativePath &&
+      formData.append("webkitRelativePath", webkitRelativePath);
     type && formData.append("type", type);
     // 要把文件对象放在最后append 否则 multer插件自定义文件名字时 req.body为{}
     formData.append("file", file.slice(chunkSize * i, chunkSize * (i + 1)));
@@ -70,7 +76,7 @@ class FileUpload extends React.Component {
       ProgressIncrease
     } = this.props;
     const file = this.file.current.files[0];
-    const chunkSize = 10 * 1024 * 1024; // 每次上传10MB
+    const chunkSize = 5 * 1024 * 1024; // 每次上传10MB
     // 上传的总的文件大小
     const fileSize = file.size;
     // 一共上传的请求次数
@@ -106,7 +112,9 @@ class FileUpload extends React.Component {
             }
 
             // 找到还没上传的chunks
-            const readyToChunks = totalChunks.filter(o => !uploaded.includes(o));
+            const readyToChunks = totalChunks.filter(
+              o => !uploaded.includes(o)
+            );
 
             if (fileBroken) {
               readyToChunks.unshift(
@@ -114,8 +122,11 @@ class FileUpload extends React.Component {
               );
             }
             // 已经上传到哪个chunk了
-            let progressChunk = uploaded[uploaded.length - 1]
-            ProgressOpen(file.name, Math.ceil((progressChunk + 1) / chunks * 100));
+            let progressChunk = uploaded[uploaded.length - 1];
+            ProgressOpen(
+              file.name,
+              Math.ceil((progressChunk + 1) / chunks * 100)
+            );
             for (let i = 0; i < readyToChunks.length; i++, progressChunk++) {
               const formData = new FormData();
               this.uploadChunk({
@@ -129,7 +140,10 @@ class FileUpload extends React.Component {
               await new Promise(resolve => {
                 setTimeout(() => resolve(), 1000);
               });
-              ProgressIncrease(Math.ceil((progressChunk + 1) / chunks * 100), file.name);
+              ProgressIncrease(
+                Math.ceil((progressChunk + 1) / chunks * 100),
+                file.name
+              );
             }
           } else {
             ProgressOpen(file.name);
@@ -169,7 +183,7 @@ class FileUpload extends React.Component {
   };
 
   onChange = () => {
-    const { Upload, location: { query: { path } }, CheckMd5 } = this.props;
+    const { CheckMd5 } = this.props;
     // 选择文件确认文件大小
     // 发一次请求确认该文件是否上传过，服务器有记录则实现秒传, 有部分记录则续传
     // NOTE 使用md5判断文件唯一性
@@ -177,7 +191,8 @@ class FileUpload extends React.Component {
     // NOTE browserMD5File 在选中文件后再次选择文件时点取消 报错
     // TODO 改用原生的js-spark-md5插件 可以支持获取md5进度
     const file = this.file.current.files[0];
-    this.setState(() => {
+    this.setState(
+      () => {
         return {
           loadingMd5: true,
           chooseFile: true,
@@ -189,7 +204,7 @@ class FileUpload extends React.Component {
           if (err) {
             this.setState({
               fileName: "获取文件md5失败, 请重试"
-            })
+            });
           } else {
             CheckMd5(data, file.size).then(() => {
               this.setState({
@@ -274,11 +289,13 @@ class FileUpload extends React.Component {
   }
 }
 
-module.exports = withRouter(connect(
-  state => ({
-    home: state.home,
-    progress: state.progress,
-    http: state.http
-  }),
-  dispatch => bindActionCreators(uploadAction, dispatch)
-)(FileUpload));
+module.exports = withRouter(
+  connect(
+    state => ({
+      home: state.home,
+      progress: state.progress,
+      http: state.http
+    }),
+    dispatch => bindActionCreators(uploadAction, dispatch)
+  )(FileUpload)
+);
