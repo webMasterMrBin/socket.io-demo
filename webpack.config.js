@@ -94,7 +94,7 @@ const config = {
       "process.env": {
         NODE_ENV: JSON.stringify(env)
       },
-      redux_logger: JSON.stringify(env)
+      NODE_ENV: JSON.stringify(env)
     })
   ]
 };

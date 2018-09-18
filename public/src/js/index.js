@@ -32,7 +32,7 @@ const reducers = combineReducers({
 
 const store = createStore(
   reducers,
-  redux_logger !== "production"
+  NODE_ENV !== "production"
     ? applyMiddleware(
         thunk,
         promiseMiddleware,
@@ -46,7 +46,8 @@ const store = createStore(
 
 // 每次 state 更新时，打印日志
 // 注意 subscribe() 返回一个函数用来注销监听器
-store.subscribe(() => console.log(store.getState()));
+NODE_ENV !== "production" &&
+  store.subscribe(() => console.log(store.getState()));
 
 ReactDOM.render(
   <Provider store={store}>

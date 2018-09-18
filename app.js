@@ -34,7 +34,7 @@ app.use(
     resave: true,
     saveUninitialized: true,
     cookie: {
-      expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+      maxAge: 1000 * 60 * 60 * 8,
       httpOnly: true
     }
   })
@@ -93,7 +93,12 @@ app.use((req, res, next) => {
 });
 
 // 错误处理
-app.use((err, req, res) => {
+app.use((
+  err,
+  req,
+  res,
+  //eslint-disable-next-line
+  next) => {
   res.status(err.status || 500);
   res.send("ERROR");
 });
