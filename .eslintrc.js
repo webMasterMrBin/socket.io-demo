@@ -14,7 +14,7 @@ module.exports = {
     "IcoPath": true,
     "i18n": true,
     "moment": true,
-    "redux_logger": true
+    "NODE_ENV": true
   },
   "settings": {
     "import/resolver": {

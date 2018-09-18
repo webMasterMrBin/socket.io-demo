@@ -2,7 +2,6 @@ const multer = require("multer");
 const db = require("../model");
 const moment = require("moment");
 const fs = require("fs");
-const path = require("path");
 const _ = require("lodash");
 const { promisify } = require("util");
 
@@ -11,7 +10,7 @@ const uploadChunk = multer({
     destination: (req, file, cb) => {
       cb(null, req.body.total === "1" ? "./uploads/" : "./chunks/");
     },
-    filename: (req, file, cb) => {
+    filename(req, file, cb) {
       cb(
         null,
         req.body.total === "1"
@@ -19,7 +18,10 @@ const uploadChunk = multer({
           : `${req.body.index}-${req.body.md5}-${req.session.userId}`
       );
     }
-  })
+  }),
+  limits: {
+    fileSize: 1024 * 1024 * 5 // 每次上传的chunk5M以内
+  }
 }).any();
 
 function unlink(res, filePath) {
@@ -68,10 +70,11 @@ module.exports = {
       if (err) {
         console.log("upload err", err);
         res.status(500).json({ msg: err });
+        return;
       }
       const webkitRelativePath = req.query.path;
       const directoryPath = []; // 上传得文件夹内的路径
-      const { md5, fileName } = req.body;
+      const { fileName } = req.body;
       // 上传的是文件夹
       if (req.body.uploadWay === "directory") {
         try {
@@ -102,7 +105,7 @@ module.exports = {
             });
 
             // 存目录
-            const saveDirectory = _.map(finalDirectoryPath, (o, i) => {
+            const saveDirectory = _.map(finalDirectoryPath, o => {
               const directoryName = o.split("/");
               if (directoryName.length === 1) {
                 // 一级目录
@@ -218,7 +221,12 @@ module.exports = {
             pipe();
           });
           readable.on("error", () => {
-            res.status(500).json({ msg: "合并文件出错", exis: false, uploadChunks, broken: true });
+            res.status(500).json({
+              msg: "合并文件出错",
+              exis: false,
+              uploadChunks,
+              broken: true
+            });
           });
         }
       }
@@ -246,15 +254,17 @@ module.exports = {
         if (_.isEmpty(result)) {
           if (!_.isEmpty(chunks)) {
             // 找到chunks里所有文件大小总和比较是否上传完整
-            Promise.all(chunks.map(o => statAsync(`./chunks/${o}`))).then(data => {
-              const sum = data.reduce((a, b) => a + b.size, 0);
-              res.json({
-                msg: "文件md5不存在",
-                exis: false,
-                uploadChunks: chunks,
-                broken: sum !== fileSize ? true : false
-              });
-            });
+            Promise.all(chunks.map(o => statAsync(`./chunks/${o}`))).then(
+              data => {
+                const sum = data.reduce((a, b) => a + b.size, 0);
+                res.json({
+                  msg: "文件md5不存在",
+                  exis: false,
+                  uploadChunks: chunks,
+                  broken: sum !== fileSize ? true : false
+                });
+              }
+            );
           } else {
             res.json({
               msg: "文件md5不存在",
@@ -354,34 +364,23 @@ module.exports = {
   },
 
   // 删除文件
-  remove: (req, res) => {
+  remove: async (req, res) => {
     const { filePath, name } = req.query;
-
-    // 文件存在则删除
-    fs.access(filePath, err => {
-      if (err) {
-        res.status(500).json({ msg: "文件不存在" });
-      } else {
-        fs.unlink(filePath, err => {
-          if (err) {
-            res.status(500).json({ msg: "文件删除失败" });
-          }
-
-          // 从数据库删除该条文件信息
-          try {
-            (async () => {
-              await db.file.deleteOne({
-                fileId: req.session.userId,
-                path: filePath
-              });
-              res.json({ msg: `文件${name}已删除` });
-            })();
-          } catch (e) {
-            res.status(500).json({ msg: e });
-          }
-        });
-      }
-    });
+    try {
+      const files = await promisify(fs.readdir)("./uploads");
+      const file = files.find(
+        o => o.includes(name) && o.includes(req.session.userId)
+      );
+      await unlink(res, `./uploads/${file}`);
+      await db.file.deleteOne({
+        fileId: req.session.userId,
+        path: filePath,
+        fileName: name
+      });
+      res.json({ msg: `文件${name}已删除` });
+    } catch (e) {
+      res.status(500).json({ msg: "something wrong" });
+    }
   },
 
   // 下载文件

@@ -1,4 +1,4 @@
-import { Icon, List, Button, Breadcrumb, Table, Tooltip, Input, Progress } from "antd";
+import { Icon, Button, Breadcrumb, Table, Tooltip, Input } from "antd";
 import { browserHistory, withRouter, Link } from "react-router";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -89,10 +89,8 @@ class File extends React.Component {
 
   columns = () => {
     const {
-      RemoveFile,
       file: { files },
       CreateDir,
-      RemoveDir,
       location: {
         query: { path }
       }
@@ -170,7 +168,7 @@ class File extends React.Component {
           );
           return (
             <div>
-              <Tooltip title="下载">
+              {/*<Tooltip title="下载">
                 <a
                   onClick={() =>
                     this.setState({
@@ -183,7 +181,7 @@ class File extends React.Component {
                 >
                   <Icon type="download" />
                 </a>
-              </Tooltip>
+              </Tooltip>*/}
               <Tooltip title="删除">
                 <a
                   onClick={() =>
@@ -221,7 +219,7 @@ class File extends React.Component {
       http: { loading },
       location: {
         query: { path }
-      },
+      }
     } = this.props;
     const dataSource = [];
     const pathArr = path.split("/").slice(1);
@@ -302,10 +300,12 @@ class File extends React.Component {
               onDoubleClick: () => {
                 if (record.isDir) {
                   browserHistory.replace(
-                    `${location.href}${location.href.split("")[
-                      location.href.length - 1
-                    ] === "/" ? "" : "/"}${record.name}`
-                  )
+                    `${location.href}${
+                      location.href.split("")[location.href.length - 1] === "/"
+                        ? ""
+                        : "/"
+                    }${record.name}`
+                  );
                 }
               }
             };
@@ -316,11 +316,13 @@ class File extends React.Component {
   }
 }
 
-module.exports = withRouter(connect(
-  state => ({
-    home: state.home,
-    file: state.file,
-    http: state.http
-  }),
-  dispatch => bindActionCreators(uploadAction, dispatch)
-)(File));
+module.exports = withRouter(
+  connect(
+    state => ({
+      home: state.home,
+      file: state.file,
+      http: state.http
+    }),
+    dispatch => bindActionCreators(uploadAction, dispatch)
+  )(File)
+);

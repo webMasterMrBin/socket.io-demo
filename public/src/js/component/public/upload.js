@@ -15,7 +15,8 @@ class FileUpload extends React.Component {
       chooseFile: false, // 是否选择文件
       fileName: "", // 选择的文件名字
       loadingMd5: false, // md5检验状态
-      md5: ""
+      md5: "",
+      fileWarn: "" // 文件大小限制提示
     };
   }
 
@@ -30,7 +31,6 @@ class FileUpload extends React.Component {
     const formData = new FormData();
     formData.append("uploadWay", "directory");
     _.forEach(this.directory.current.files, (o, i) => {
-      console.log("o", o);
       formData.append(`file${i}`, o);
       formData.append(`file${i}-path`, o.webkitRelativePath);
     });
@@ -76,7 +76,7 @@ class FileUpload extends React.Component {
       ProgressIncrease
     } = this.props;
     const file = this.file.current.files[0];
-    const chunkSize = 5 * 1024 * 1024; // 每次上传10MB
+    const chunkSize = 5 * 1024 * 1024; // 每次上传5MB
     // 上传的总的文件大小
     const fileSize = file.size;
     // 一共上传的请求次数
@@ -191,31 +191,39 @@ class FileUpload extends React.Component {
     // NOTE browserMD5File 在选中文件后再次选择文件时点取消 报错
     // TODO 改用原生的js-spark-md5插件 可以支持获取md5进度
     const file = this.file.current.files[0];
-    this.setState(
-      () => {
-        return {
-          loadingMd5: true,
-          chooseFile: true,
-          fileName: file ? file.name : ""
-        };
-      },
-      () => {
-        browserMD5File(file, (err, data) => {
-          if (err) {
-            this.setState({
-              fileName: "获取文件md5失败, 请重试"
-            });
-          } else {
-            CheckMd5(data, file.size).then(() => {
+    // NOTE 只能上传100M以内的文件
+    if (file.size < 1024 * 1024 * 100) {
+      this.setState(
+        () => {
+          return {
+            loadingMd5: true,
+            chooseFile: true,
+            fileName: file ? file.name : ""
+          };
+        },
+        () => {
+          browserMD5File(file, (err, data) => {
+            if (err) {
               this.setState({
-                loadingMd5: false,
-                md5: data
+                fileName: "获取文件md5失败, 请重试"
               });
-            });
-          }
-        });
-      }
-    );
+            } else {
+              CheckMd5(data, file.size).then(() => {
+                this.setState({
+                  loadingMd5: false,
+                  md5: data
+                });
+              });
+            }
+          });
+        }
+      );
+    } else {
+      this.setState({
+        fileWarn: "请上传100M以内的文件",
+        fileName: file.name
+      });
+    }
   };
 
   menu = () => {
@@ -273,6 +281,9 @@ class FileUpload extends React.Component {
           )}
           {this.state.fileName && (
             <div className="file-name">{this.state.fileName}</div>
+          )}
+          {this.state.fileWarn && (
+            <div className="file-warn">{this.state.fileWarn}</div>
           )}
           {this.state.chooseFile && (
             <Button
