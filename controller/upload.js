@@ -4,11 +4,19 @@ const moment = require("moment");
 const fs = require("fs");
 const _ = require("lodash");
 const { promisify } = require("util");
+const uploadsPath =
+  process.env.NODE_ENV === "production"
+    ? "/mysocketdemoFile/uploads/"
+    : "./uploads/"; // 文件存储路径
+const chunksPath =
+  process.env.NODE_ENV === "production"
+    ? "/mysocketdemoFile/chunks/"
+    : "./chunks/";
 
 const uploadChunk = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, req.body.total === "1" ? "./uploads/" : "./chunks/");
+      cb(null, req.body.total === "1" ? uploadsPath : chunksPath);
     },
     filename(req, file, cb) {
       cb(
@@ -174,9 +182,9 @@ module.exports = {
   mergeFile(req, res) {
     const { fileName, type, size, webkitRelativePath, md5 } = req.body;
     const writeable = fs.createWriteStream(
-      `./uploads/${req.session.userId}-${fileName}`
+      `${uploadsPath}${req.session.userId}-${fileName}`
     );
-    fs.readdir("./chunks", (err, files) => {
+    fs.readdir(chunksPath, (err, files) => {
       if (err) {
         res.status(500).json({ msg: "读取文件chunks list失败" });
       }
@@ -193,9 +201,8 @@ module.exports = {
       async function pipe() {
         if (!chunks.length) {
           writeable.end(); // 手动关闭可写流
-          console.log("最后一个chunk 上传完毕");
           await Promise.all(
-            uploadChunks.map(o => unlink(res, `./chunks/${o}`))
+            uploadChunks.map(o => unlink(res, `${chunksPath}${o}`))
           );
           await db.file.create({
             fileId: req.session.userId,
@@ -215,7 +222,9 @@ module.exports = {
             broken: false
           });
         } else {
-          const readable = fs.createReadStream(`./chunks/${chunks.shift()}`);
+          const readable = fs.createReadStream(
+            `${chunksPath}${chunks.shift()}`
+          );
           readable.pipe(writeable, { end: false });
           readable.on("end", () => {
             pipe();
@@ -243,7 +252,7 @@ module.exports = {
         fileId: req.session.userId,
         md5: md5
       });
-      fs.readdir("./chunks", (err, files) => {
+      fs.readdir(chunksPath, (err, files) => {
         const chunks = files.filter(o => o.includes(md5)).sort((a, b) => {
           return a.split("-")[0] - b.split("-")[0];
         });
@@ -254,7 +263,7 @@ module.exports = {
         if (_.isEmpty(result)) {
           if (!_.isEmpty(chunks)) {
             // 找到chunks里所有文件大小总和比较是否上传完整
-            Promise.all(chunks.map(o => statAsync(`./chunks/${o}`))).then(
+            Promise.all(chunks.map(o => statAsync(`${chunksPath}${o}`))).then(
               data => {
                 const sum = data.reduce((a, b) => a + b.size, 0);
                 res.json({
@@ -367,11 +376,11 @@ module.exports = {
   remove: async (req, res) => {
     const { filePath, name } = req.query;
     try {
-      const files = await promisify(fs.readdir)("./uploads");
+      const files = await promisify(fs.readdir)(uploadsPath);
       const file = files.find(
         o => o.includes(name) && o.includes(req.session.userId)
       );
-      await unlink(res, `./uploads/${file}`);
+      await unlink(res, `${uploadsPath}${file}`);
       await db.file.deleteOne({
         fileId: req.session.userId,
         path: filePath,

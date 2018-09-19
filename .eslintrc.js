@@ -30,6 +30,9 @@ module.exports = {
     "no-console": "off"
   },
   "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
     "ecmaVersion": 6,
     "sourceType": "module"
   }
