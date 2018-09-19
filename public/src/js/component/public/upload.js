@@ -211,7 +211,8 @@ class FileUpload extends React.Component {
               CheckMd5(data, file.size).then(() => {
                 this.setState({
                   loadingMd5: false,
-                  md5: data
+                  md5: data,
+                  fileWarn: ""
                 });
               });
             }

@@ -1,11 +1,12 @@
-import { Field, reduxForm, SubmissionError, destroy } from "redux-form";
+import { Field, reduxForm, SubmissionError } from "redux-form";
 import { InputField } from "./public";
-import { Button, Input, Tabs } from "antd";
+import { Tabs } from "antd";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as userAction from "../action/user";
 import WindowOpen from "./public/windowOpen";
 import MessageOpen from "./public/messageOpen";
+import { NAME_LIMIT } from "./public/regexp";
 
 const { TabPane } = Tabs;
 
@@ -13,16 +14,20 @@ const validate = values => {
   const error = {};
   if (!values.userName) {
     error.userName = "请输入用户名";
+  } else if (!NAME_LIMIT.test(values.userName)) {
+    error.userName = "用户名1-6位英文或数字";
   }
 
   if (!values.userPwd) {
     error.userPwd = "请输入密码";
+  } else if (!NAME_LIMIT.test(values.userPwd)) {
+    error.userPwd = "密码1-6位英文或数字";
   }
 
   return error;
 };
 
-class Login extends React.Component {
+let Login = class Login extends React.Component {
   submit = v => {
     const { Login } = this.props;
     return Login(v).then(data => {
@@ -60,9 +65,9 @@ class Login extends React.Component {
       </form>
     );
   }
-}
+};
 
-class Logup extends React.Component {
+let Logup = class Logup extends React.Component {
   submit = v => {
     const { Register } = this.props;
     return Register(v).then(data => {
@@ -100,7 +105,7 @@ class Logup extends React.Component {
       </form>
     );
   }
-}
+};
 
 Login = connect(
   state => ({
@@ -126,10 +131,11 @@ Logup = reduxForm({
   validate
 })(Logup);
 
-
 class Index extends React.Component {
   render() {
-    const { home: { windowOpen, errMsg, messageOpen, doneMsg } } = this.props;
+    const {
+      home: { windowOpen, errMsg, messageOpen, doneMsg }
+    } = this.props;
     return (
       <div className="login-box">
         <div>
@@ -149,8 +155,6 @@ class Index extends React.Component {
   }
 }
 
-module.exports = connect(
-  state => ({
-    home: state.home
-  })
-)(Index);
+module.exports = connect(state => ({
+  home: state.home
+}))(Index);
