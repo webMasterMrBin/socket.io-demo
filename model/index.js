@@ -9,8 +9,9 @@ mongoose.connect("mongodb://localhost/userLogin", {
   server: {
     poolSize: 6, // 默认为5
     reconnectTries: 5, // 无限重连的节奏
-    auto_reconnect: true,
-  }
+    auto_reconnect: true
+  },
+  useNewUrlParser: true
 });
 
 const db = mongoose.connection;
@@ -21,7 +22,7 @@ db.on("error", () => {
 
 db.on("disconnected", function() {
   console.log("mongoose disconnected");
-})
+});
 
 db.once("open", function() {
   // we're connected!
