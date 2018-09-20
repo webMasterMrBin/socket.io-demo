@@ -201,7 +201,7 @@ class File extends React.Component {
   // 新建文件夹
   createDirector = dataSource => {
     dataSource.push({
-      key: dataSource[dataSource.length - 1].key + 1,
+      key: (_.get(dataSource[dataSource.length - 1], "key") || 0) + 1,
       name: "新建文件夹",
       size: "-",
       modifiedDate: moment().format("YYYY-MM-DD HH:mm:ss"),
@@ -296,7 +296,6 @@ class File extends React.Component {
           loading={loadState || uploadState}
           onRow={record => {
             return {
-              onClick: () => console.log("record", record),
               onDoubleClick: () => {
                 if (record.isDir) {
                   browserHistory.replace(
