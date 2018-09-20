@@ -222,7 +222,8 @@ class FileUpload extends React.Component {
     } else {
       this.setState({
         fileWarn: "请上传100M以内的文件",
-        fileName: file.name
+        fileName: file.name,
+        chooseFile: false
       });
     }
   };
@@ -281,7 +282,9 @@ class FileUpload extends React.Component {
             </div>
           )}
           {this.state.fileName && (
-            <div className="file-name">{this.state.fileName}</div>
+            <div>
+              <div className="file-name">{this.state.fileName}</div>
+            </div>
           )}
           {this.state.fileWarn && (
             <div className="file-warn">{this.state.fileWarn}</div>

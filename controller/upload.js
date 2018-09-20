@@ -33,20 +33,13 @@ const uploadChunk = multer({
   }
 }).any();
 
-function unlink(res, filePath) {
+function unlink(filePath) {
   return new Promise((resolve, reject) => {
-    fs.access(filePath, err => {
+    fs.unlink(filePath, err => {
       if (err) {
-        reject("文件不存在");
-        res.status(500).json({ msg: "文件不存在" });
+        reject(err);
       } else {
-        fs.unlink(filePath, err => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve("文件删除成功");
-          }
-        });
+        resolve("文件删除成功");
       }
     });
   });
@@ -58,13 +51,13 @@ async function saveToMongo(req, res, err) {
     await db.file.create({
       fileId: req.session.userId,
       fileName,
-      path: "/uploads", // multer 已上传文件的完整路径
+      path: uploadsPath, // multer 已上传文件的完整路径
       type,
       modifiedDate: moment().format(),
       size,
       webkitRelativePath,
       md5,
-      isdir: 0
+      isDir: 0
     });
     res();
   } catch (e) {
@@ -152,7 +145,7 @@ module.exports = {
             res.json({ msg: "上传完成" });
           })();
         } catch (e) {
-          res.status(500).json({ msg: e });
+          res.status(500).json(e);
         }
       } else {
         // 上传单个文件
@@ -202,19 +195,17 @@ module.exports = {
       async function pipe() {
         if (!chunks.length) {
           writeable.end(); // 手动关闭可写流
-          await Promise.all(
-            uploadChunks.map(o => unlink(res, `${chunksPath}${o}`))
-          );
+          await Promise.all(uploadChunks.map(o => unlink(`${chunksPath}${o}`)));
           await db.file.create({
             fileId: req.session.userId,
             fileName,
-            path: "/uploads", // multer 已上传文件的完整路径
+            path: uploadsPath, // multer 已上传文件的完整路径
             type,
             modifiedDate: moment().format(),
             size,
             webkitRelativePath,
             md5,
-            isdir: 0
+            isDir: 0
           });
           return res.json({
             msg: `文件${fileName}上传完成`,
@@ -293,7 +284,7 @@ module.exports = {
         }
       });
     } catch (e) {
-      res.status(500).json({ msg: e });
+      res.status(500).json(e);
     }
   },
 
@@ -306,7 +297,7 @@ module.exports = {
         .populate("fileId");
       res.json({ msg: "list file done", fileList: result });
     } catch (e) {
-      res.status(500).json("服务器错误");
+      res.status(500).json(e);
     }
   },
 
@@ -326,7 +317,7 @@ module.exports = {
       });
       res.json({ msg: `新建文件夹${directoryName}成功` });
     } catch (e) {
-      res.status(500).json({ msg: e });
+      res.status(500).json(e);
     }
   },
 
@@ -344,10 +335,11 @@ module.exports = {
           }${directoryName}`
         )
       });
-
-      const unlinkFromUpload = files.map(o => {
-        return unlink(res, o.path);
-      });
+      console.log("files", files);
+      // const uploadFiles = await promisify(fs.readdir)(uploadsPath);
+      // const file = uploadFiles.find(
+      //   o => o.includes(files.fileName) && o.includes(req.session.userId)
+      // );
 
       const removeCurrentDir = db.file.deleteOne({
         fileId: req.session.userId,
@@ -355,7 +347,6 @@ module.exports = {
         isDir: 1
       });
 
-      // 该目录下所有文件夹和文件
       const removeChild = db.file.deleteMany({
         fileId: req.session.userId,
         webkitRelativePath: new RegExp(
@@ -364,12 +355,21 @@ module.exports = {
           }${directoryName}`
         )
       });
+
+      // 该目录下所有文件夹和文件
       // db里面删数据和从uploads删文件同时执行
-      await Promise.all([removeCurrentDir, removeChild, ...unlinkFromUpload]);
+      await Promise.all([removeCurrentDir, removeChild]);
+
+      await Promise.all(
+        files.map(o => {
+          return unlink(`${o.path}${req.session.userId}-${o.fileName}`);
+        })
+      );
 
       res.json({ msg: `删除文件夹${directoryName}成功` });
     } catch (e) {
-      res.status(500).json({ msg: e });
+      console.log("e", e);
+      res.status(500).json(e);
     }
   },
 
@@ -381,7 +381,7 @@ module.exports = {
       const file = files.find(
         o => o.includes(name) && o.includes(req.session.userId)
       );
-      await unlink(res, `${uploadsPath}${file}`);
+      await unlink(`${uploadsPath}${file}`);
       await db.file.deleteOne({
         fileId: req.session.userId,
         path: filePath,
@@ -389,7 +389,7 @@ module.exports = {
       });
       res.json({ msg: `文件${name}已删除` });
     } catch (e) {
-      res.status(500).json({ msg: "something wrong" });
+      res.status(500).json(e);
     }
   },
 
