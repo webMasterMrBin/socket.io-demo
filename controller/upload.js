@@ -3,14 +3,15 @@ const db = require("../model");
 const moment = require("moment");
 const fs = require("fs");
 const _ = require("lodash");
+const path = require("path");
 const { promisify } = require("util");
 const uploadsPath =
   process.env.NODE_ENV === "production"
-    ? "/mysocketdemoFile/uploads/"
+    ? `${path.join(__dirname, "../../uploads/")}`
     : "./uploads/"; // 文件存储路径
 const chunksPath =
   process.env.NODE_ENV === "production"
-    ? "/mysocketdemoFile/chunks/"
+    ? `${path.join(__dirname, "../../chunks/")}`
     : "./chunks/";
 
 const uploadChunk = multer({

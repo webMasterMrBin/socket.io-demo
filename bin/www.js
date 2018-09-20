@@ -17,7 +17,9 @@ io.on("connection", socket => {
   });
 });
 
-http.listen(4000);
+http.listen(4000, () => {
+  console.log("NODE_ENV", process.env.NODE_ENV);
+});
 
 http.on("listening", () => {
   debug("listening on 4000");
