@@ -7,7 +7,6 @@ export function Register(value) {
       url: "/api/register",
       data: JSON.stringify(value),
       success: d => {
-        console.log("请求结束后 返回的数据", d);
         dispatch({
           type: "MESSAGE_OPEN",
           messageOpen: true,
@@ -24,7 +23,6 @@ export function Login(value) {
       url: "/api/login",
       data: JSON.stringify(value),
       success: d => {
-        console.log("请求结束后 返回的数据", d);
         dispatch({
           type: "MESSAGE_OPEN",
           messageOpen: true,
@@ -77,7 +75,6 @@ export function GetUser() {
     return ajax.get(dispatch, {
       url: "/api/user",
       success: d => {
-        console.log("user d", d);
         if (d.status) {
           dispatch({
             type: "USER_LIST",
