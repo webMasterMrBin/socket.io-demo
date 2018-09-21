@@ -18,7 +18,6 @@ const config = {
     publicPath: env === "dev" ? "http://localhost:4001/public/" : "./build/",
     chunkFilename: "[id].js"
   },
-  devtool: "source-map",
   devServer: {
     index: "",
     port: 4001,
@@ -106,6 +105,8 @@ if (env !== "dev") {
       sourceMap: true
     })
   );
+} else {
+  config.devtool = "source-map";
 }
 
 module.exports = config;
