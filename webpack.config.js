@@ -6,6 +6,7 @@ const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const extractLESS = new ExtractTextPlugin("css/[name].css");
 
 const env = process.env.NODE_ENV;
+console.log("env", env);
 
 const config = {
   entry: {
@@ -44,7 +45,8 @@ const config = {
     rules: [
       {
         test: /\.js$/,
-        loader: "babel-loader"
+        loader: "babel-loader",
+        exclude: /node_modules/
       },
       {
         test: /\.css$/,
@@ -102,7 +104,11 @@ if (env !== "dev") {
   config.plugins.push(extractLESS);
   config.plugins.push(
     new UglifyJsPlugin({
-      sourceMap: true
+      // 最紧凑的输出
+      beautify: false,
+      // 删除所有的注释
+      comments: false,
+      parallel: true
     })
   );
 } else {
