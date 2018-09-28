@@ -6,7 +6,7 @@ import file from "./file";
 import chat from "./chat";
 import { newComponent } from "./hoc";
 
-const Test = () => <div>66444test111111122222</div>;
+const Test = () => <div>欢迎访问</div>;
 
 const routes = [
   {
