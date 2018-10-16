@@ -1,9 +1,11 @@
-import { Icon, Button, Breadcrumb, Table, Tooltip, Input } from "antd";
-import { browserHistory, withRouter, Link } from "react-router";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as uploadAction from "action/file";
-import FileUpload from "../public/upload";
+import { Icon, Button, Breadcrumb, Table, Tooltip, Input } from 'antd';
+import { browserHistory, withRouter, Link } from 'react-router';
+import * as uploadAction from 'action/file';
+import * as previewAction from 'action/preview';
+import PreView from '../public/preview';
+import FileUpload from '../public/upload';
+import connect from 'bin-react-redux-connect';
+import PropTypes from 'prop-types';
 
 class File extends React.Component {
   constructor(props) {
@@ -15,16 +17,30 @@ class File extends React.Component {
     } = this.props;
 
     this.state = {
-      downPath: "", // 下载路径
+      downPath: '', // 下载路径
       dataSource: [],
-      directoryName: "",
+      directoryName: '',
       url: {
-        pathname: "/file",
-        query: { path: "" }
+        pathname: '/file',
+        query: { path: '' }
       },
       path // 文件的webkitRelativePath路径
     };
   }
+
+  static propTypes = {
+    ListFiles: PropTypes.func,
+    PreviewClose: PropTypes.func,
+    preview: PropTypes.object,
+    location: PropTypes.object,
+    CreateDir: PropTypes.func,
+    PreviewOpen: PropTypes.func,
+    file: PropTypes.object,
+    http: PropTypes.object,
+    WindowOpenConfirm: PropTypes.func,
+    RemoveDir: PropTypes.func,
+    RemoveFile: PropTypes.func
+  };
 
   componentDidMount() {
     const {
@@ -63,9 +79,9 @@ class File extends React.Component {
   // 显示文件type logo
   displayLogo = record => {
     if (record.isDir) {
-      return "folder";
+      return 'folder';
     }
-    return "file";
+    return 'file';
   };
 
   // 删文件和文件夹
@@ -91,15 +107,16 @@ class File extends React.Component {
     const {
       file: { files },
       CreateDir,
+      PreviewOpen,
       location: {
         query: { path }
       }
     } = this.props;
     return [
       {
-        title: "文件名",
-        key: "name",
-        dataIndex: "name",
+        title: '文件名',
+        key: 'name',
+        dataIndex: 'name',
         width: 300,
         render: (text, record) => {
           if (record.createDir) {
@@ -139,7 +156,14 @@ class File extends React.Component {
             );
           }
           return (
-            <div className="file-name">
+            <div
+              className="file-name"
+              onClick={() => {
+                if (record.type.includes('image')) {
+                  PreviewOpen(text, record.type);
+                }
+              }}
+            >
               <Icon type={this.displayLogo(record)} />
               <span className="file">{text}</span>
             </div>
@@ -147,24 +171,24 @@ class File extends React.Component {
         }
       },
       {
-        title: "大小",
-        key: "size",
-        dataIndex: "size"
+        title: '大小',
+        key: 'size',
+        dataIndex: 'size'
       },
       {
-        title: "修改时间",
-        key: "modifiedDate",
-        dataIndex: "modifiedDate"
+        title: '修改时间',
+        key: 'modifiedDate',
+        dataIndex: 'modifiedDate'
       },
       {
-        title: "操作",
-        key: "action",
-        dataIndex: "action",
+        title: '操作',
+        key: 'action',
+        dataIndex: 'action',
         render: (text, record) => {
-          const filePath = _.get(files[record.key], "path");
+          const filePath = _.get(files[record.key], 'path');
           const webkitRelativePath = _.get(
             files[record.key],
-            "webkitRelativePath"
+            'webkitRelativePath'
           );
           return (
             <div>
@@ -201,10 +225,10 @@ class File extends React.Component {
   // 新建文件夹
   createDirector = dataSource => {
     dataSource.push({
-      key: (_.get(dataSource[dataSource.length - 1], "key") || 0) + 1,
-      name: "新建文件夹",
-      size: "-",
-      modifiedDate: moment().format("YYYY-MM-DD HH:mm:ss"),
+      key: (_.get(dataSource[dataSource.length - 1], 'key') || 0) + 1,
+      name: '新建文件夹',
+      size: '-',
+      modifiedDate: moment().format('YYYY-MM-DD HH:mm:ss'),
       isDir: 1,
       createDir: 1
     });
@@ -219,19 +243,21 @@ class File extends React.Component {
       http: { loading },
       location: {
         query: { path }
-      }
+      },
+      preview: { previewOpen, fileName, preType },
+      PreviewClose
     } = this.props;
     const dataSource = [];
-    const pathArr = path.split("/").slice(1);
-    let sum = "";
+    const pathArr = path.split('/').slice(1);
+    let sum = '';
     const breadUrl = [];
     // 加载状态
     const loadState = !_.isEmpty(loading)
-      ? loading[Object.keys(loading).find(o => o.includes("/api/files"))]
+      ? loading[Object.keys(loading).find(o => o.includes('/api/files'))]
       : false;
     // 文件上传
     const uploadState = !_.isEmpty(loading)
-      ? loading[Object.keys(loading).find(o => o.includes("/api/upload"))]
+      ? loading[Object.keys(loading).find(o => o.includes('/api/upload'))]
       : false;
 
     if (!_.isEmpty(files)) {
@@ -239,14 +265,13 @@ class File extends React.Component {
         dataSource.push({
           key: i,
           name: o.fileName,
-          size: o.size ? this.bytes(o.size) : "-",
-          modifiedDate: moment(o.modifiedDate).format("YYYY-MM-DD HH:mm:ss"),
+          size: o.size ? this.bytes(o.size) : '-',
+          modifiedDate: moment(o.modifiedDate).format('YYYY-MM-DD HH:mm:ss'),
           isDir: o.isDir,
           type: o.type
         });
       });
     }
-
     return (
       <div className="file-system">
         <div className="button-group">
@@ -284,7 +309,7 @@ class File extends React.Component {
             );
           })}
         </Breadcrumb>
-        <iframe src={this.state.downPath} style={{ display: "none" }} />
+        <iframe src={this.state.downPath} style={{ display: 'none' }} />
         <Table
           className="file-table"
           columns={this.columns()}
@@ -300,9 +325,9 @@ class File extends React.Component {
                 if (record.isDir) {
                   browserHistory.replace(
                     `${location.href}${
-                      location.href.split("")[location.href.length - 1] === "/"
-                        ? ""
-                        : "/"
+                      location.href.split('')[location.href.length - 1] === '/'
+                        ? ''
+                        : '/'
                     }${record.name}`
                   );
                 }
@@ -310,6 +335,13 @@ class File extends React.Component {
             };
           }}
         />
+        {previewOpen && (
+          <PreView
+            PreviewClose={PreviewClose}
+            fileName={fileName}
+            preType={preType}
+          />
+        )}
       </div>
     );
   }
@@ -317,11 +349,9 @@ class File extends React.Component {
 
 module.exports = withRouter(
   connect(
-    state => ({
-      home: state.home,
-      file: state.file,
-      http: state.http
-    }),
-    dispatch => bindActionCreators(uploadAction, dispatch)
-  )(File)
+    File,
+    ['home', 'file', 'http', 'preview'],
+    uploadAction,
+    previewAction
+  )
 );

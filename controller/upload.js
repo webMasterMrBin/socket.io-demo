@@ -1,28 +1,28 @@
-const multer = require("multer");
-const db = require("../model");
-const moment = require("moment");
-const fs = require("fs");
-const _ = require("lodash");
-const path = require("path");
-const { promisify } = require("util");
+const multer = require('multer');
+const db = require('../model');
+const moment = require('moment');
+const fs = require('fs');
+const _ = require('lodash');
+const path = require('path');
+const { promisify } = require('util');
 const uploadsPath =
-  process.env.NODE_ENV === "production"
-    ? `${path.join(__dirname, "../../uploads/")}`
-    : "./uploads/"; // 文件存储路径
+  process.env.NODE_ENV === 'production'
+    ? `${path.join(__dirname, '../../uploads/')}`
+    : './uploads/'; // 文件存储路径
 const chunksPath =
-  process.env.NODE_ENV === "production"
-    ? `${path.join(__dirname, "../../chunks/")}`
-    : "./chunks/";
+  process.env.NODE_ENV === 'production'
+    ? `${path.join(__dirname, '../../chunks/')}`
+    : './chunks/';
 
 const uploadChunk = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, req.body.total === "1" ? uploadsPath : chunksPath);
+      cb(null, req.body.total === '1' ? uploadsPath : chunksPath);
     },
     filename(req, file, cb) {
       cb(
         null,
-        req.body.total === "1"
+        req.body.total === '1'
           ? `${req.session.userId}-${req.body.fileName}`
           : `${req.body.index}-${req.body.md5}-${req.session.userId}`
       );
@@ -39,7 +39,7 @@ function unlink(filePath) {
       if (err) {
         reject(err);
       } else {
-        resolve("文件删除成功");
+        resolve('文件删除成功');
       }
     });
   });
@@ -61,7 +61,7 @@ async function saveToMongo(req, res, err) {
     });
     res();
   } catch (e) {
-    console.log("error", e);
+    console.log('error', e);
     err(e);
   }
 }
@@ -70,7 +70,7 @@ module.exports = {
   upload: (req, res) => {
     uploadChunk(req, res, err => {
       if (err) {
-        console.log("upload err", err);
+        console.log('upload err', err);
         res.status(500).json({ msg: err });
         return;
       }
@@ -78,14 +78,14 @@ module.exports = {
       const directoryPath = []; // 上传得文件夹内的路径
       const { fileName } = req.body;
       // 上传的是文件夹
-      if (req.body.uploadWay === "directory") {
+      if (req.body.uploadWay === 'directory') {
         try {
           (async () => {
             const saveFile = _.map(req.files, (o, i) => {
-              const pathName = req.body[`file${i}-path`].split("/");
+              const pathName = req.body[`file${i}-path`].split('/');
               // 获取目录路径的名称
               pathName.length = pathName.length - 1;
-              directoryPath.push(pathName.join("/"));
+              directoryPath.push(pathName.join('/'));
               // 存单个文件信息
               return db.file.create({
                 fileId: req.session.userId,
@@ -96,8 +96,8 @@ module.exports = {
                 size: o.size,
                 isDir: 0,
                 webkitRelativePath: `${webkitRelativePath}${
-                  webkitRelativePath !== "/" ? "/" : ""
-                }${pathName.join("/")}`
+                  webkitRelativePath !== '/' ? '/' : ''
+                }${pathName.join('/')}`
               });
             });
 
@@ -108,19 +108,19 @@ module.exports = {
 
             // 存目录
             const saveDirectory = _.map(finalDirectoryPath, o => {
-              const directoryName = o.split("/");
+              const directoryName = o.split('/');
               if (directoryName.length === 1) {
                 // 一级目录
                 return db.file.create({
                   fileId: req.session.userId,
                   fileName: directoryName[0],
-                  path: "",
-                  type: "",
+                  path: '',
+                  type: '',
                   modifiedDate: moment().format(),
                   size: 0,
                   isDir: 1,
                   webkitRelativePath: `${webkitRelativePath}${
-                    webkitRelativePath !== "/" ? "/" : ""
+                    webkitRelativePath !== '/' ? '/' : ''
                   }`
                 });
               }
@@ -131,18 +131,18 @@ module.exports = {
               return db.file.create({
                 fileId: req.session.userId,
                 fileName: directoryName1,
-                path: "",
-                type: "",
+                path: '',
+                type: '',
                 modifiedDate: moment().format(),
                 size: 0,
                 isDir: 1,
                 webkitRelativePath: `${webkitRelativePath}${
-                  webkitRelativePath !== "/" ? "/" : ""
-                }${directoryName.join("/")}`
+                  webkitRelativePath !== '/' ? '/' : ''
+                }${directoryName.join('/')}`
               });
             });
             await Promise.all([...saveDirectory, ...saveFile]);
-            res.json({ msg: "上传完成" });
+            res.json({ msg: '上传完成' });
           })();
         } catch (e) {
           res.status(500).json(e);
@@ -180,11 +180,11 @@ module.exports = {
     );
     fs.readdir(chunksPath, (err, files) => {
       if (err) {
-        res.status(500).json({ msg: "读取文件chunks list失败" });
+        res.status(500).json({ msg: '读取文件chunks list失败' });
       }
       // 排序过的chunks
       const uploadChunks = files.filter(o => o.includes(md5)).sort((a, b) => {
-        return a.split("-")[0] - b.split("-")[0];
+        return a.split('-')[0] - b.split('-')[0];
       });
 
       const chunks = _.cloneDeep(uploadChunks);
@@ -218,12 +218,12 @@ module.exports = {
             `${chunksPath}${chunks.shift()}`
           );
           readable.pipe(writeable, { end: false });
-          readable.on("end", () => {
+          readable.on('end', () => {
             pipe();
           });
-          readable.on("error", () => {
+          readable.on('error', () => {
             res.status(500).json({
-              msg: "合并文件出错",
+              msg: '合并文件出错',
               exis: false,
               uploadChunks,
               broken: true
@@ -246,10 +246,10 @@ module.exports = {
       });
       fs.readdir(chunksPath, (err, files) => {
         const chunks = files.filter(o => o.includes(md5)).sort((a, b) => {
-          return a.split("-")[0] - b.split("-")[0];
+          return a.split('-')[0] - b.split('-')[0];
         });
         if (err) {
-          res.status(500).json({ msg: "读取file chunks失败" });
+          res.status(500).json({ msg: '读取file chunks失败' });
         }
 
         if (_.isEmpty(result)) {
@@ -259,7 +259,7 @@ module.exports = {
               data => {
                 const sum = data.reduce((a, b) => a + b.size, 0);
                 res.json({
-                  msg: "文件md5不存在",
+                  msg: '文件md5不存在',
                   exis: false,
                   uploadChunks: chunks,
                   broken: sum !== fileSize ? true : false
@@ -268,7 +268,7 @@ module.exports = {
             );
           } else {
             res.json({
-              msg: "文件md5不存在",
+              msg: '文件md5不存在',
               exis: false,
               uploadChunks: chunks,
               broken: false
@@ -276,7 +276,7 @@ module.exports = {
           }
         } else {
           res.json({
-            msg: "文件已上传, 存在md5",
+            msg: '文件已上传, 存在md5',
             exis: true,
             uploadChunks: chunks,
             broken: false
@@ -294,8 +294,8 @@ module.exports = {
       const { path } = req.query;
       const result = await db.file
         .find({ fileId: req.session.userId, webkitRelativePath: path })
-        .populate("fileId");
-      res.json({ msg: "list file done", fileList: result });
+        .populate('fileId');
+      res.json({ msg: 'list file done', fileList: result });
     } catch (e) {
       res.status(500).json(e);
     }
@@ -308,8 +308,8 @@ module.exports = {
       await db.file.create({
         fileId: req.session.userId,
         fileName: directoryName,
-        path: "",
-        type: "",
+        path: '',
+        type: '',
         modifiedDate: moment().format(),
         size: 0,
         isDir: 1,
@@ -331,11 +331,11 @@ module.exports = {
         isDir: 0,
         webkitRelativePath: new RegExp(
           `^${
-            webkitRelativePath === "/" ? "/" : webkitRelativePath
+            webkitRelativePath === '/' ? '/' : webkitRelativePath
           }${directoryName}`
         )
       });
-      console.log("files", files);
+      console.log('files', files);
       // const uploadFiles = await promisify(fs.readdir)(uploadsPath);
       // const file = uploadFiles.find(
       //   o => o.includes(files.fileName) && o.includes(req.session.userId)
@@ -351,7 +351,7 @@ module.exports = {
         fileId: req.session.userId,
         webkitRelativePath: new RegExp(
           `^${
-            webkitRelativePath === "/" ? "/" : webkitRelativePath
+            webkitRelativePath === '/' ? '/' : webkitRelativePath
           }${directoryName}`
         )
       });
@@ -368,7 +368,7 @@ module.exports = {
 
       res.json({ msg: `删除文件夹${directoryName}成功` });
     } catch (e) {
-      console.log("e", e);
+      console.log('e', e);
       res.status(500).json(e);
     }
   },
@@ -398,14 +398,37 @@ module.exports = {
     const { filePath, name } = req.query;
     fs.access(filePath, err => {
       if (err) {
-        res.status(500).json({ msg: "文件不存在" });
+        res.status(500).json({ msg: '文件不存在' });
       } else {
         res.set({
-          "Content-Type": "application/octet-stream",
-          "Content-Disposition": `attachment; filename=${name}`
+          'Content-Type': 'application/octet-stream',
+          'Content-Disposition': `attachment; filename=${name}`
         });
         fs.createReadStream(filePath).pipe(res);
       }
     });
+  },
+
+  // read image
+  readImage(req, res) {
+    const { fileName, preType } = req.query;
+    res.sendFile(`${req.session.userId}-${fileName}`, {
+      root: `${uploadsPath}/`,
+      headers: {
+        'Content-Type': preType
+      }
+    });
+    // setTimeout(() => {
+    //   const stream = fs.createReadStream(`${uploadsPath}/${req.session.userId}-${fileName}`);
+    //   const data = [];
+    //   if (stream) {
+    //     stream.on('data', chunk => {
+    //       data.push(chunk);
+    //     });
+    //     stream.on('end', () => {
+    //       res.json(Buffer.concat(data).toString('base64'));
+    //     });
+    //   }
+    // }, 3000);
   }
 };

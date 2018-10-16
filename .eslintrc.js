@@ -25,8 +25,8 @@ module.exports = {
     "import/core-modules": ["redux-form", "react", "react-router", "i18n"]
   },
   "rules": {
-    "react/prop-types": "off",
-    "prettier/prettier": "error",
+    "react/prop-types": "warn",
+    "prettier/prettier": ["error", {"singleQuote": true}],
     "no-console": "off"
   },
   "parserOptions": {
