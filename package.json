@@ -67,6 +67,7 @@
     "babel-preset-stage-0": "^6.24.1",
     "babel-preset-stage-1": "^6.24.1",
     "babel-preset-stage-3": "^6.24.1",
+    "bin-react-redux-connect": "^3.0.2",
     "css-loader": "^0.28.11",
     "eslint": "^4.19.0",
     "eslint-config-airbnb": "^16.1.0",

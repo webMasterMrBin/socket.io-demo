@@ -1,13 +1,12 @@
-import { connect } from "react-redux";
-import WindowOpen from "./windowOpen";
-import MessageOpen from "./messageOpen";
-import { bindActionCreators } from "redux";
-import * as userAction from "action/user";
-import { Layout, Menu, Icon, Dropdown } from "antd";
-import PropTypes from "prop-types";
-import { Link } from "react-router";
-import ProgressControl from "./progress";
-import SIDE from "./side";
+import connect from 'bin-react-redux-connect';
+import WindowOpen from './windowOpen';
+import MessageOpen from './messageOpen';
+import * as userAction from 'action/user';
+import { Layout, Menu, Icon, Dropdown } from 'antd';
+import PropTypes from 'prop-types';
+import { Link } from 'react-router';
+import ProgressControl from './progress';
+import SIDE from './side';
 const { Header, Sider, Content } = Layout;
 
 class Main extends React.Component {
@@ -85,20 +84,12 @@ class Main extends React.Component {
 }
 
 Main.propTypes = {
-  windowOpen: PropTypes.bool,
-  errMsg: PropTypes.string,
-  messageOpen: PropTypes.bool,
-  doneMsg: PropTypes.string,
-  confirm: PropTypes.bool,
-  confirmMsg: PropTypes.string,
-  confirmFunc: PropTypes.func
+  home: PropTypes.object,
+  user: PropTypes.object,
+  progress: PropTypes.object,
+  Logout: PropTypes.func,
+  children: PropTypes.element.isRequired,
+  GetUser: PropTypes.func
 };
 
-module.exports = connect(
-  state => ({
-    home: state.home,
-    user: state.user,
-    progress: state.progress
-  }),
-  dispatch => bindActionCreators(userAction, dispatch)
-)(Main);
+module.exports = connect(Main, ['home', 'user', 'progress'], userAction);
