@@ -1,27 +1,30 @@
-import { Field, reduxForm, SubmissionError } from "redux-form";
-import { InputField } from "./public";
-import { Tabs } from "antd";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as userAction from "../action/user";
-import WindowOpen from "./public/windowOpen";
-import MessageOpen from "./public/messageOpen";
-import { NAME_LIMIT } from "./public/regexp";
+import { Field, reduxForm, SubmissionError } from 'redux-form';
+import { InputField } from './public';
+import { Tabs, Tooltip } from 'antd';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as userAction from '../action/user';
+import WindowOpen from './public/windowOpen';
+import MessageOpen from './public/messageOpen';
+import { NAME_LIMIT } from './public/regexp';
+import { Github } from './public/icon';
+import gitToken from 'gitToken';
 
 const { TabPane } = Tabs;
+const { CLIENT_ID, AUTH_URL } = gitToken;
 
 const validate = values => {
   const error = {};
   if (!values.userName) {
-    error.userName = "请输入用户名";
+    error.userName = '请输入用户名';
   } else if (!NAME_LIMIT.test(values.userName)) {
-    error.userName = "用户名1-6位英文或数字";
+    error.userName = '用户名1-6位英文或数字';
   }
 
   if (!values.userPwd) {
-    error.userPwd = "请输入密码";
+    error.userPwd = '请输入密码';
   } else if (!NAME_LIMIT.test(values.userPwd)) {
-    error.userPwd = "密码1-6位英文或数字";
+    error.userPwd = '密码1-6位英文或数字';
   }
 
   return error;
@@ -33,8 +36,8 @@ let Login = class Login extends React.Component {
     return Login(v).then(data => {
       if (data.status === 0) {
         throw new SubmissionError({
-          userName: "用户名或密码不正确, 请重试",
-          _error: "登录失败"
+          userName: '用户名或密码不正确, 请重试',
+          _error: '登录失败'
         });
       }
     });
@@ -73,8 +76,8 @@ let Logup = class Logup extends React.Component {
     return Register(v).then(data => {
       if (data.status === 0) {
         throw new SubmissionError({
-          userName: "用户名已存在, 请重试",
-          _error: "注册失败"
+          userName: '用户名已存在, 请重试',
+          _error: '注册失败'
         });
       }
     });
@@ -115,7 +118,7 @@ Login = connect(
 )(Login);
 
 Login = reduxForm({
-  form: "user_login",
+  form: 'user_login',
   validate
 })(Login);
 
@@ -127,7 +130,7 @@ Logup = connect(
 )(Logup);
 
 Logup = reduxForm({
-  form: "user_register",
+  form: 'user_register',
   validate
 })(Logup);
 
@@ -136,9 +139,10 @@ class Index extends React.Component {
     const {
       home: { windowOpen, errMsg, messageOpen, doneMsg }
     } = this.props;
+
     return (
       <div className="login-box">
-        <div>
+        <div className="login-main">
           <Tabs defaultActiveKey="1" animated={false}>
             <TabPane tab="登录" key="1">
               <Login />
@@ -148,6 +152,13 @@ class Index extends React.Component {
             </TabPane>
           </Tabs>
         </div>
+        <Tooltip title="Git登录">
+          <a href={`${AUTH_URL}?client_id=${CLIENT_ID}`}>
+            <svg className="git-icon" viewBox="0 0 16 16">
+              <Github />
+            </svg>
+          </a>
+        </Tooltip>
         {windowOpen && <WindowOpen error={errMsg} />}
         {messageOpen && <MessageOpen doneMsg={doneMsg} />}
       </div>

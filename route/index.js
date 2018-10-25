@@ -1,5 +1,9 @@
 const user = require('../controller/user');
 const file = require('../controller/upload');
+const gitToken = require('../public/src/js/gitToken');
+const request = require('request');
+
+const { CLIENT_ID, CLIENT_SECRET, ACCESS_URL, USER_URL } = gitToken;
 
 // 判断用户登录状态
 const authority = (req, res, next) => {
@@ -32,6 +36,36 @@ module.exports = app => {
   app.get('/api/fileMd5', apiAuth, file.fileMd5);
   app.post('/api/merge', apiAuth, file.mergeFile);
   app.get('/api/readImage', apiAuth, file.readImage);
+  app.get('/api/callback', (req, res) => {
+    const { code } = req.query;
+    const user_agent = req.get('user-agent');
+    request(
+      `${ACCESS_URL}?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${code}`,
+      (err, response, body) => {
+        const access_token = body && body.split('&')[0];
+        const url = `${USER_URL}?${access_token}`;
+        request(
+          {
+            uri: url,
+            headers: {
+              'user-agent': user_agent,
+              method: 'get'
+            }
+          },
+          (err, resUser, userBody) => {
+            console.log('userBody', userBody);
+            console.log('userBody.userName', userBody.userName);
+            console.log('typeof userBody', typeof userBody);
+            const info = JSON.parse(userBody);
+            req.session.userName = info.login;
+            req.session.userId = info.id;
+            req.session.github = true;
+            res.redirect('/');
+          }
+        );
+      }
+    );
+  });
   // 独立的登录页面 session过期或不存在都会重定向到这
   app.get(
     '/login',
