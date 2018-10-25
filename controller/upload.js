@@ -293,7 +293,10 @@ module.exports = {
     try {
       const { path } = req.query;
       const result = await db.file
-        .find({ fileId: req.session.userId, webkitRelativePath: path })
+        .find({
+          fileId: req.session.userId,
+          webkitRelativePath: path
+        })
         .populate('fileId');
       res.json({ msg: 'list file done', fileList: result });
     } catch (e) {

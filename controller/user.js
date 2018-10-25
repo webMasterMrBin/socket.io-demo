@@ -1,4 +1,4 @@
-const db = require("../model");
+const db = require('../model');
 
 const mod = {
   register: async (req, res) => {
@@ -7,9 +7,9 @@ const mod = {
       const userInfo = await db.user.findOne({ userName });
       if (!userInfo) {
         await db.user.create({ userName, userPwd });
-        res.json({ status: 1, msg: "注册成功, 请重新登录" });
+        res.json({ status: 1, msg: '注册成功, 请重新登录' });
       } else {
-        res.json({ status: 0, msg: "注册失败, 用户名已存在" });
+        res.json({ status: 0, msg: '注册失败, 用户名已存在' });
       }
     } catch (e) {
       res.json(e);
@@ -29,7 +29,7 @@ const mod = {
         if (!req.session.userName) {
           req.session.userName = userName;
           req.session.userId = userInfo._id;
-          res.json({ status: 1, msg: "第一次来这里, 欢迎" });
+          res.json({ status: 1, msg: '第一次来这里, 欢迎' });
         } else {
           res.json({
             status: 1,
@@ -38,7 +38,7 @@ const mod = {
           });
         }
       } else {
-        res.json({ status: 0, msg: "登录失败, 用户名或密码不正确" });
+        res.json({ status: 0, msg: '登录失败, 用户名或密码不正确' });
       }
     } catch (e) {
       res.json({ errMsg: e });
@@ -47,14 +47,17 @@ const mod = {
 
   getUser: async (req, res) => {
     try {
-      // 用户已登录
-      if (req.session.userName) {
+      if (req.session.github) {
+        // github登录
+        res.json({ status: 1, userInfo: { userName: req.session.userName } });
+      } else if (req.session.userName) {
+        // 用户已登录
         const userInfo = await db.user.findOne({
           userName: req.session.userName
         });
         res.json({ status: 1, userInfo });
       } else {
-        res.json({ status: 0, msg: "请重新登录" });
+        res.json({ status: 0, msg: '请重新登录' });
       }
     } catch (e) {
       res.json({ errMsg: e });
