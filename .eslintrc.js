@@ -26,7 +26,7 @@ module.exports = {
   },
   "rules": {
     "react/prop-types": "off",
-    "prettier/prettier": ["error", {"singleQuote": true}],
+    "prettier/prettier": ["error", {"singleQuote": true, "trailingComma": "es5" }],
     "no-console": "off"
   },
   "parserOptions": {
