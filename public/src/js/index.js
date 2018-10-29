@@ -33,7 +33,7 @@ const reducers = combineReducers({
   file,
   progress,
   chat,
-  preview
+  preview,
 });
 
 const store = createStore(
