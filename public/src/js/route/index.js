@@ -19,6 +19,7 @@ const Index = () => {
           title="Waiting"
           description="待办事项统计TODO-LIST"
         />
+        <Step status="wait" title="Waiting" description="react /lib/update" />
         <Step
           status="wait"
           title="Waiting"

@@ -1,6 +1,24 @@
-.todo-item {
+.todo-container {
   display: flex;
-  .todo-item-action {
-    color: @color-red;
+}
+
+.todo-box {
+  .todo-item:first-child {
+    border-top: 1px #aaa solid;
+  }
+  .todo-item {
+    border: 1px #aaa solid;
+    border-top: none;
+    padding: 10px 5px;
+    display: flex;
+    .todo-item-head {
+      flex: 0 1 50px;
+    }
+    .todo-item-content {
+      flex: 0 1 50%;
+    }
+    .todo-item-action {
+      color: @color-red;
+    }
   }
 }
