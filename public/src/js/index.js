@@ -13,6 +13,7 @@ import file from './reducer/file';
 import chat from './reducer/chat';
 import progress from './reducer/progress';
 import preview from './reducer/preview';
+import todo from './reducer/todo';
 
 if (NODE_ENV !== 'production') {
   import('../less/index.less');
@@ -34,6 +35,7 @@ const reducers = combineReducers({
   progress,
   chat,
   preview,
+  todo,
 });
 
 const store = createStore(

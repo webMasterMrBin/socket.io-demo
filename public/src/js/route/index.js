@@ -6,6 +6,7 @@ import file from './file';
 import chat from './chat';
 import { newComponent } from './hoc';
 import { Steps } from 'antd';
+import todo from './todo';
 
 const Step = Steps.Step;
 
@@ -61,6 +62,7 @@ const routes = [
       },
       file,
       chat,
+      todo,
     ],
   },
   login,
