@@ -5,16 +5,24 @@ import { Checkbox, Button, Input } from 'antd';
 
 // 每个代办任务
 const Item = props => {
-  const { data } = props;
+  const { data, Deletetodo, Todochange } = props;
   return (
     <div className="todo-item">
-      <div>
-        <Checkbox />
+      <div className="todo-item-head">
+        <Checkbox
+          checked={data.complete}
+          onChange={() => Todochange(data.id, !data.complete)}
+        />
       </div>
       <div className="todo-item-content">{data.text}</div>
       <div className="todo-item-action">
-        <span>删除</span>
-        <span>编辑</span>
+        <span
+          onClick={() => Deletetodo(data.id)}
+          style={{ marginRight: '20px', cursor: 'pointer' }}
+        >
+          删除
+        </span>
+        <span style={{ cursor: 'pointer' }}>编辑</span>
       </div>
     </div>
   );
@@ -24,6 +32,9 @@ class Index extends React.Component {
   static propTypes = {
     todo: PropTypes.object,
     Addtodo: PropTypes.func,
+    Deletetodo: PropTypes.func,
+    Todochange: PropTypes.func,
+    type: PropTypes.string,
   };
 
   state = {
@@ -35,15 +46,32 @@ class Index extends React.Component {
     window.localStorage.setItem('todo', JSON.stringify(todoAll));
   };
 
-  render() {
+  typeRender = () => {
     const {
+      type,
       todo: { todoAll },
-      Addtodo,
+      Deletetodo,
+      Todochange,
     } = this.props;
+    const func = (o, i) => (
+      <Item key={i} data={o} Deletetodo={Deletetodo} Todochange={Todochange} />
+    );
+    switch (type) {
+      case 'undone':
+        return todoAll.filter(o => !o.complete).map(func);
+      case 'done':
+        return todoAll.filter(o => o.complete).map(func);
+      default:
+        return todoAll.map(func);
+    }
+  };
+
+  render() {
+    const { Addtodo } = this.props;
     return (
       <div>
-        {todoAll.map((o, i) => <Item key={i} data={o} />)}
-        <div style={{ display: 'flex' }}>
+        <div className="todo-box">{this.typeRender()}</div>
+        <div className="todo-container">
           <Input
             placeholder="你想干嘛"
             onChange={e => this.setState({ task: e.target.value })}

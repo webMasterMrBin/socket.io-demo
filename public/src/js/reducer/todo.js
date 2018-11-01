@@ -1,12 +1,19 @@
 import shortid from 'shortid';
 
+const todoAll = _.get(
+  window.localStorage.getItem('todo')
+    ? JSON.parse(window.localStorage.getItem('todo'))
+    : {},
+  'todoAll'
+);
+
 const initialState = {
   /*[{
     id: '',
     text: '',
     complete: false
   }]*/
-  todoAll: JSON.parse(window.localStorage.getItem('todo')) || [
+  todoAll: todoAll || [
     {
       id: shortid.generate(),
       text: 'test',
@@ -17,15 +24,16 @@ const initialState = {
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case 'TODO_CHANGE':
-      return Object.assign({}, state, {
-        todoAll: state.todoAll.concat([
-          {
-            [action.id]: action.id,
-            complete: action.complete,
-          },
-        ]),
+    case 'TODO_CHANGE': {
+      state.todoAll.forEach(o => {
+        if (o.id === action.id) {
+          o.complete = action.complete;
+        }
       });
+      return {
+        todoAll: state.todoAll,
+      };
+    }
     case 'TODO_ADD':
       return {
         todoAll: state.todoAll.concat([
