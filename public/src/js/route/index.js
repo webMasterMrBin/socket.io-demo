@@ -15,8 +15,8 @@ const Index = () => {
     <div>
       <Steps direction="vertical" current={1}>
         <Step
-          status="wait"
-          title="Waiting"
+          status="Finished"
+          title="Finished"
           description="待办事项统计TODO-LIST"
         />
         <Step status="wait" title="Waiting" description="react /lib/update" />
@@ -36,10 +36,11 @@ const Index = () => {
           description="图表组件使用(监控流量数据)"
         />
         <Step
-          status="wait"
-          title="Waiting"
+          status="Finished"
+          title="Finished"
           description="es6 用class写发布订阅模式"
         />
+        <Step status="wait" title="Waiting" description="正则学习(模板引擎)" />
       </Steps>
     </div>
   );
