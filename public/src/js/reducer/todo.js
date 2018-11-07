@@ -25,13 +25,13 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case 'TODO_CHANGE': {
-      state.todoAll.forEach(o => {
-        if (o.id === action.id) {
-          o.complete = action.complete;
-        }
-      });
       return {
-        todoAll: state.todoAll,
+        todoAll: state.todoAll.map(
+          o =>
+            o.id === action.id
+              ? { id: action.id, text: o.text, complete: action.complete }
+              : o
+        ),
       };
     }
     case 'TODO_ADD':

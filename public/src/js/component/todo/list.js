@@ -4,29 +4,40 @@ import * as todoAction from 'action/todo';
 import { Checkbox, Button, Input } from 'antd';
 
 // 每个代办任务
-const Item = props => {
-  const { data, Deletetodo, Todochange } = props;
-  return (
-    <div className="todo-item">
-      <div className="todo-item-head">
-        <Checkbox
-          checked={data.complete}
-          onChange={() => Todochange(data.id, !data.complete)}
-        />
+class Item extends React.Component {
+  shouldComponentUpdate(nextProps) {
+    if (nextProps.data.complete === this.props.data.complete) {
+      return false;
+    }
+    return true;
+  }
+
+  onChange = () => {
+    const { data, Todochange } = this.props;
+    Todochange(data.id, !data.complete);
+  };
+
+  render() {
+    const { data, Deletetodo } = this.props;
+    return (
+      <div className="todo-item">
+        <div className="todo-item-head">
+          <Checkbox checked={data.complete} onChange={this.onChange} />
+        </div>
+        <div className="todo-item-content">{data.text}</div>
+        <div className="todo-item-action">
+          <span
+            onClick={() => Deletetodo(data.id)}
+            style={{ marginRight: '20px', cursor: 'pointer' }}
+          >
+            删除
+          </span>
+          <span style={{ cursor: 'pointer' }}>编辑</span>
+        </div>
       </div>
-      <div className="todo-item-content">{data.text}</div>
-      <div className="todo-item-action">
-        <span
-          onClick={() => Deletetodo(data.id)}
-          style={{ marginRight: '20px', cursor: 'pointer' }}
-        >
-          删除
-        </span>
-        <span style={{ cursor: 'pointer' }}>编辑</span>
-      </div>
-    </div>
-  );
-};
+    );
+  }
+}
 
 class Index extends React.Component {
   static propTypes = {
