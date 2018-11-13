@@ -1,66 +1,68 @@
-const express = require("express");
-const path = require("path");
-const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
-const session = require("express-session");
-const redisStore = require("connect-redis")(session);
+const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const redisStore = require('connect-redis')(session);
 const app = express();
-const logger = require("morgan");
+const logger = require('morgan');
+var graphqlHTTP = require('express-graphql');
+const { root, schema } = require('./schema/mutation');
 // const methods = ["get", "post", "put", "delete"];
 
 // view engine se"get", "post", "put", "delete"
-app.set("views", path.join(__dirname, "public/page"));
+app.set('views', path.join(__dirname, 'public/page'));
 
-app.set("view engine", "ejs");
+app.set('view engine', 'ejs');
 
 // 可以访问public下的静态资源
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // 开发环境日志
-app.use(logger("dev"));
+app.use(logger('dev'));
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(cookieParser()); // use cookie
 
 const store = new redisStore({
-  ttl: 1000 * 60 * 60 * 8
+  ttl: 1000 * 60 * 60 * 8,
 });
 
 app.use(
   session({
     store: store,
-    secret: "keyboard cat",
+    secret: 'keyboard cat',
     resave: true,
     saveUninitialized: true,
     cookie: {
       maxAge: 1000 * 60 * 60 * 8,
-      httpOnly: true
-    }
+      httpOnly: true,
+    },
   })
 );
 
 app.use((req, res, next) => {
   // Website you wish to allow to connect
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader('Access-Control-Allow-Origin', '*');
 
   // Request methods you wish to allow
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST");
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
 
   //res.setHeader("Access-Control-Allow-Credentials", true);
   next();
 });
 
-app.get("/api/logout", (req, res) => {
+app.get('/api/logout', (req, res) => {
   if (req.session.userName) {
     store.destroy(req.session.id, () => {
       req.session.destroy(() => {
-        res.json({ status: 1, msg: "请重新登录" });
+        res.json({ status: 1, msg: '请重新登录' });
       });
-      res.clearCookie("connect.sid", { path: "/" });
+      res.clearCookie('connect.sid', { path: '/' });
     });
   } else {
-    res.json({ status: 0, msg: "请确认登录状态" });
+    res.json({ status: 0, msg: '请确认登录状态' });
   }
 });
 
@@ -84,13 +86,23 @@ app.get("/api/logout", (req, res) => {
 //   };
 // }
 
+// 运行 GraphQL query '{ hello }' ，输出响应
+app.use(
+  '/api/graphql',
+  graphqlHTTP({
+    schema: schema,
+    rootValue: root,
+    graphiql: true,
+  })
+);
+
 // 引入路由
-require("./route")(app);
+require('./route')(app);
 
 // 捕获错误
 app.use((req, res, next) => {
   // err.status = 404;
-  next(new Error("Not Found"));
+  next(new Error('Not Found'));
 });
 
 // 错误处理
@@ -98,10 +110,10 @@ app.use((
   err,
   req,
   res,
-  //eslint-disable-next-line
+  // eslint-disable-next-line
   next) => {
   res.status(err.status || 500);
-  res.send("ERROR");
+  res.send('ERROR');
 });
 
 module.exports = app;
