@@ -6,8 +6,8 @@ const session = require('express-session');
 const redisStore = require('connect-redis')(session);
 const app = express();
 const logger = require('morgan');
-var graphqlHTTP = require('express-graphql');
-const { root, schema } = require('./schema/mutation');
+const { ApolloServer } = require('apollo-server-express');
+const { schema } = require('./graphql');
 // const methods = ["get", "post", "put", "delete"];
 
 // view engine se"get", "post", "put", "delete"
@@ -86,15 +86,8 @@ app.get('/api/logout', (req, res) => {
 //   };
 // }
 
-// 运行 GraphQL query '{ hello }' ，输出响应
-app.use(
-  '/api/graphql',
-  graphqlHTTP({
-    schema: schema,
-    rootValue: root,
-    graphiql: true,
-  })
-);
+const server = new ApolloServer({ schema });
+server.applyMiddleware({ app, path: '/api/graphql' });
 
 // 引入路由
 require('./route')(app);

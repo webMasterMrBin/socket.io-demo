@@ -11,13 +11,13 @@ console.log('env', env);
 const config = {
   entry: {
     main: './public/src/js/index.js',
-    vendor: ['react', 'react-dom', 'redux', 'react-redux', 'lodash', 'moment']
+    vendor: ['react', 'react-dom', 'redux', 'react-redux', 'lodash', 'moment'],
   },
   output: {
     filename: '[name].js',
     path: path.join(__dirname, '/public/build'),
     publicPath: env === 'dev' ? 'http://localhost:4001/public/' : './build/',
-    chunkFilename: '[id].js'
+    chunkFilename: '[id].js',
   },
   devServer: {
     index: '',
@@ -34,23 +34,31 @@ const config = {
             console.log('Skipping proxy for browser request.(/login)');
             return '/index.html';
           }
-        }
+        },
+      },
+      '/graphql': {
+        target: 'http://localhost:4000',
       },
       '/api': {
-        target: 'http://localhost:4000'
-      }
-    }
+        target: 'http://localhost:4000',
+      },
+    },
   },
   module: {
     rules: [
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        exclude: /node_modules/
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.(graphql|gql)$/,
+        exclude: /node_modules/,
+        loader: 'graphql-tag/loader',
       },
       {
         test: /\.css$/,
-        use: ['style-loader', { loader: 'css-loader' }]
+        use: ['style-loader', { loader: 'css-loader' }],
       },
       {
         test: /\.less$/,
@@ -62,31 +70,31 @@ const config = {
                   {
                     loader: 'css-loader',
                     options: {
-                      minimize: true //css压缩
-                    }
+                      minimize: true, //css压缩
+                    },
                   },
                   {
-                    loader: 'less-loader'
-                  }
-                ]
+                    loader: 'less-loader',
+                  },
+                ],
               })
-            : ['style-loader', 'css-loader', 'less-loader']
-      }
-    ]
+            : ['style-loader', 'css-loader', 'less-loader'],
+      },
+    ],
   },
   resolve: {
-    modules: [path.join(__dirname, './public/src/js'), 'node_modules']
+    modules: [path.join(__dirname, './public/src/js'), 'node_modules'],
   },
   plugins: [
     new webpack.ProvidePlugin({
       _: 'lodash',
       React: 'react',
       ReactDOM: 'react-dom',
-      moment: 'moment'
+      moment: 'moment',
     }),
     new webpack.optimize.CommonsChunkPlugin({
       name: ['vendor', 'manifest'],
-      minChunks: Infinity
+      minChunks: Infinity,
     }),
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
@@ -94,11 +102,11 @@ const config = {
       DEV_URL: JSON.stringify('http://localhost:4000'),
       PRO_URL: JSON.stringify('http://songlibin.xyz'),
       'process.env': {
-        NODE_ENV: JSON.stringify(env)
+        NODE_ENV: JSON.stringify(env),
       },
-      NODE_ENV: JSON.stringify(env)
-    })
-  ]
+      NODE_ENV: JSON.stringify(env),
+    }),
+  ],
 };
 // 生产环境
 if (env !== 'dev') {
@@ -109,7 +117,7 @@ if (env !== 'dev') {
       beautify: false,
       // 删除所有的注释
       comments: false,
-      parallel: true
+      parallel: true,
     })
   );
 } else {
