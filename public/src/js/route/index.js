@@ -5,68 +5,14 @@ import NotFound from './404';
 import file from './file';
 import chat from './chat';
 import { newComponent } from './hoc';
-import { Steps, Button } from 'antd';
+import { Steps } from 'antd';
 import todo from './todo';
 
 const Step = Steps.Step;
 
-var author = 'andy';
-var content = 'hope is a good thing';
-// var query = `mutation CreateMessage($input: MessageInput) {
-//   createMessage(input: $input) {
-//     id
-//     author
-//     content
-//   }
-// }`;
-var updateQuery = `mutation UpdateMessage($id: ID!, $input: MessageInput) {
-  updateMessage(id: $id, input: $input) {
-    id
-    author
-    content
-  }
-}`;
-
 const Index = () => {
-  // const post = () =>
-  //   fetch('/api/graphql', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       Accept: 'application/json',
-  //     },
-  //     body: JSON.stringify({
-  //       query,
-  //       variables: {
-  //         input: {
-  //           author,
-  //           content,
-  //         },
-  //       },
-  //     }),
-  //   });
-
-  const update = () =>
-    fetch('/api/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        query: updateQuery,
-        variables: {
-          input: {
-            author,
-            content,
-          },
-          id: 1,
-        },
-      }),
-    });
   return (
     <div>
-      <Button onClick={update}>graphql改数据</Button>
       <Steps direction="vertical" current={1}>
         <Step
           status="Finished"
