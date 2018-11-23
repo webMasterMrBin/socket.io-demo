@@ -1,0 +1,10 @@
+type Query {
+  getArticleList: [ArticleList]
+}
+
+type ArticleList {
+  title: String
+  create_time: String
+  author: String
+  content: String
+}
