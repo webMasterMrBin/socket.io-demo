@@ -1,3 +1,7 @@
-type Query  {
-  hello: String
+type Query {
+  hello(cid: Int): Hello
+}
+
+type Hello {
+  world: String
 }

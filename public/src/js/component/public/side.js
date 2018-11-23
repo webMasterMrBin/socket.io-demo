@@ -21,6 +21,11 @@ const SIDE = [
     url: '/todo',
     name: '待办事项',
   },
+  {
+    key: 5,
+    url: '/article',
+    name: 'graphql的数据',
+  },
 ];
 
 export default SIDE;

@@ -1,0 +1,5 @@
+query Fuck($cid: Int) {
+  hello(cid: $cid) {
+    world
+  }
+}

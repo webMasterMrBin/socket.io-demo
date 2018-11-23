@@ -14,6 +14,15 @@ import chat from './reducer/chat';
 import progress from './reducer/progress';
 import preview from './reducer/preview';
 import todo from './reducer/todo';
+import ApolloClient from 'apollo-boost';
+import { ApolloProvider } from 'react-apollo';
+
+const client = new ApolloClient({
+  uri: `http://localhost:4001/api/graphql`,
+  onError() {
+    console.log('graphQL error!!');
+  },
+});
 
 if (NODE_ENV !== 'production') {
   import('../less/index.less');
@@ -58,8 +67,10 @@ NODE_ENV !== 'production' &&
   store.subscribe(() => console.log(store.getState()));
 
 ReactDOM.render(
-  <Provider store={store}>
-    <Router history={browserHistory} routes={routes} />
-  </Provider>,
+  <ApolloProvider client={client}>
+    <Provider store={store}>
+      <Router history={browserHistory} routes={routes} />
+    </Provider>
+  </ApolloProvider>,
   document.getElementById('global')
 );
