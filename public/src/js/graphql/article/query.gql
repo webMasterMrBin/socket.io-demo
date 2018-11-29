@@ -1,5 +1,25 @@
-query Fuck($cid: Int) {
-  hello(cid: $cid) {
-    world
+query getArticleList {
+  getArticleList {
+    title
+    author
+    description
+    articleId
+    create_time
+  }
+}
+
+query getArticleDetail($articleId: String) {
+  getArticleDetail(articleId: $articleId) {
+    author
+    content
+    title
+    create_time
+    articleId
+    commentList {
+      author
+      comment
+      commentId
+      create_time
+    }
   }
 }

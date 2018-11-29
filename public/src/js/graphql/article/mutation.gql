@@ -1,0 +1,18 @@
+mutation createArticle($input: ArticleInput!) {
+  createArticle(input: $input) {
+    title
+    author
+    articleId
+    create_time
+    description
+  }
+}
+
+mutation createComment($input: CommentInput!) {
+  createComment(input: $input) {
+    comment
+    author
+    commentId
+    create_time
+  }
+}
