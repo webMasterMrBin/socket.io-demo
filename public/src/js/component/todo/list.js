@@ -6,7 +6,10 @@ import { Checkbox, Button, Input } from 'antd';
 // 每个代办任务
 class Item extends React.Component {
   shouldComponentUpdate(nextProps) {
-    if (nextProps.data.complete === this.props.data.complete) {
+    if (
+      nextProps.data.complete === this.props.data.complete &&
+      nextProps.data.id === this.props.data.id
+    ) {
       return false;
     }
     return true;
@@ -67,6 +70,7 @@ class Index extends React.Component {
     const func = (o, i) => (
       <Item key={i} data={o} Deletetodo={Deletetodo} Todochange={Todochange} />
     );
+    console.log('todoAll', todoAll);
     switch (type) {
       case 'undone':
         return todoAll.filter(o => !o.complete).map(func);
