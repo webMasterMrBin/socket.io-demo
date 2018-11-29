@@ -1,23 +1,23 @@
 const mongoose = require('mongoose');
 
 /*
-  文章列表
+  一遍文章的字段
   {
     "id": 1,
     "title": "Blog Title",
     "create_time": "2017-01-10T23:07:43.248Z",
-    "author": {
-      "id": 81,
-      "name": "Mr Shelby"
-    }
+    "author": '',
+    "content": '',
+    'description': '',
   }
 */
 const listSchema = mongoose.Schema({
-  articleId: { type: mongoose.Schema.Types.ObjectId, ref: 'comment' },
+  articleId: String,
   title: String,
   create_time: { type: Date, default: Date.now },
-  author: Object,
+  author: String,
   content: String,
+  description: String,
 });
 
 const article = mongoose.model('article', listSchema);

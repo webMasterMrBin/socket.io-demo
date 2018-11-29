@@ -1,6 +1,6 @@
 import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { InputField } from './public';
-import { Tabs, Tooltip } from 'antd';
+import { Tabs, Tooltip, Input } from 'antd';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as userAction from '../action/user';
@@ -37,7 +37,7 @@ let Login = class Login extends React.Component {
       if (data.status === 0) {
         throw new SubmissionError({
           userName: '用户名或密码不正确, 请重试',
-          _error: '登录失败'
+          _error: '登录失败',
         });
       }
     });
@@ -51,12 +51,14 @@ let Login = class Login extends React.Component {
           placeholder="请输入用户名"
           name="userName"
           component={InputField}
+          AntdComponent={Input}
         />
         <Field
           type="password"
           placeholder="请输入密码"
           name="userPwd"
           component={InputField}
+          AntdComponent={Input}
         />
         <button
           disabled={submitting}
@@ -77,7 +79,7 @@ let Logup = class Logup extends React.Component {
       if (data.status === 0) {
         throw new SubmissionError({
           userName: '用户名已存在, 请重试',
-          _error: '注册失败'
+          _error: '注册失败',
         });
       }
     });
@@ -112,32 +114,32 @@ let Logup = class Logup extends React.Component {
 
 Login = connect(
   state => ({
-    user: state.user
+    user: state.user,
   }),
   dispatch => bindActionCreators(userAction, dispatch)
 )(Login);
 
 Login = reduxForm({
   form: 'user_login',
-  validate
+  validate,
 })(Login);
 
 Logup = connect(
   state => ({
-    user: state.user
+    user: state.user,
   }),
   dispatch => bindActionCreators(userAction, dispatch)
 )(Logup);
 
 Logup = reduxForm({
   form: 'user_register',
-  validate
+  validate,
 })(Logup);
 
 class Index extends React.Component {
   render() {
     const {
-      home: { windowOpen, errMsg, messageOpen, doneMsg }
+      home: { windowOpen, errMsg, messageOpen, doneMsg },
     } = this.props;
 
     return (
@@ -167,5 +169,5 @@ class Index extends React.Component {
 }
 
 module.exports = connect(state => ({
-  home: state.home
+  home: state.home,
 }))(Index);

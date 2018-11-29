@@ -1,7 +1,5 @@
-const hello = require('./hello');
-const test = require('./test');
+const article = require('./article');
 
 module.exports = {
-  hello,
-  test,
+  article,
 };

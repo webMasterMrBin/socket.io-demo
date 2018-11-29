@@ -26,6 +26,12 @@ module.exports = {
   },
   "rules": {
     "react/prop-types": "warn",
+    "react/jsx-no-bind": [2, {
+      "ignoreDOMComponents": true,
+      "ignoreRefs": true,
+      "allowArrowFunctions": true,
+      "allowFunctions": true
+    }],
     "prettier/prettier": ["error", {"singleQuote": true, "trailingComma": "es5" }],
     "no-console": "off"
   },

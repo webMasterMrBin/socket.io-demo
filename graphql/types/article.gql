@@ -1,10 +1,46 @@
 type Query {
   getArticleList: [ArticleList]
+  getArticleDetail(articleId: String): ArticleDetail
+}
+
+type ArticleDetail {
+  author: String
+  commentList: [CommentList]
+  content: String
+  title: String
+  create_time: String
+  articleId: String
+}
+
+type CommentList {
+  author: String
+  comment: String
+  commentId: String
+  create_time: String
 }
 
 type ArticleList {
+  articleId: String
   title: String
   create_time: String
   author: String
+  description: String
+}
+
+input ArticleInput {
   content: String
+  author: String
+  title: String
+  description: String
+}
+
+input CommentInput {
+  comment: String
+  author: String
+  articleId: String
+}
+
+type Mutation {
+  createArticle(input: ArticleInput!): ArticleList
+  createComment(input: CommentInput!): CommentList
 }
