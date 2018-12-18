@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 app.use(cookieParser()); // use cookie
 
 const store = new redisStore({
-  ttl: 1000 * 60 * 60 * 24,
+  ttl: 1000 * 60 * 1,
 });
 
 app.use(
@@ -34,9 +34,10 @@ app.use(
     store: store,
     secret: 'keyboard cat',
     resave: true,
+    rolling: true,
     saveUninitialized: true,
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24,
+      maxAge: 1000 * 60 * 1,
       httpOnly: true,
     },
   })

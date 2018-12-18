@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
-import connect from 'bin-react-redux-connect';
+// import connect from 'bin-react-redux-connect';
 import * as todoAction from 'action/todo';
 import { Checkbox, Button, Input } from 'antd';
+import { connect } from 'react-redux';
 
 // 每个代办任务
 class Item extends React.Component {
@@ -24,6 +25,7 @@ class Item extends React.Component {
     const { data, Deletetodo } = this.props;
     return (
       <div className="todo-item">
+        dfdf
         <div className="todo-item-head">
           <Checkbox checked={data.complete} onChange={this.onChange} />
         </div>
@@ -52,7 +54,7 @@ class Index extends React.Component {
   };
 
   state = {
-    task: '',
+    task: 'init task',
   };
 
   save = () => {
@@ -70,7 +72,6 @@ class Index extends React.Component {
     const func = (o, i) => (
       <Item key={i} data={o} Deletetodo={Deletetodo} Todochange={Todochange} />
     );
-    console.log('todoAll', todoAll);
     switch (type) {
       case 'undone':
         return todoAll.filter(o => !o.complete).map(func);
@@ -100,4 +101,8 @@ class Index extends React.Component {
   }
 }
 
-export default connect(Index, ['todo'], todoAction);
+// export default connect(Index, ['todo'], todoAction);
+export default connect(
+  state => ({ todo: { todoAll: state.todoAll } }),
+  () => todoAction
+)(Index);

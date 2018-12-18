@@ -1,5 +1,5 @@
 {
-  "presets": ["es2015", "stage-0", "react"],
+  "presets": ["es2015", "jest", "stage-0", "react"],
   "plugins": [
     ["transform-decorators-legacy"],
     ["transform-runtime", {
@@ -8,6 +8,7 @@
       "regenerator": true,
       "moduleName": "babel-runtime"
     }],
-   ["import", { "libraryName": "antd", "libraryDirectory": "es", "style": "css" }]
+    ["transform-es2015-modules-commonjs"],
+    ["import", { "libraryName": "antd", "style": "css" }]
   ]
 }
