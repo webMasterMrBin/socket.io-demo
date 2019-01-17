@@ -26,6 +26,11 @@ const SIDE = [
     url: '/article',
     name: 'graphql的数据',
   },
+  {
+    key: 6,
+    url: '/mockup',
+    name: 'mockup',
+  },
 ];
 
 export default SIDE;
