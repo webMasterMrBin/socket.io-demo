@@ -1,5 +1,6 @@
 const user = require('../controller/user');
 const file = require('../controller/upload');
+const mockup = require('../controller/mockup');
 const gitToken = require('../public/src/js/gitToken');
 const request = require('request');
 
@@ -36,6 +37,9 @@ module.exports = app => {
   app.get('/api/fileMd5', apiAuth, file.fileMd5);
   app.post('/api/merge', apiAuth, file.mergeFile);
   app.get('/api/readImage', apiAuth, file.readImage);
+  app.post('/api/mockup/upload', apiAuth, mockup.upload);
+  app.post('/api/mockup/unzlib', apiAuth, mockup.unzlib);
+  app.get('/api/mockup/getFileTree', apiAuth, mockup.treeList);
   app.get('/api/callback', (req, res) => {
     const { code } = req.query;
     const user_agent = req.get('user-agent');
@@ -49,13 +53,10 @@ module.exports = app => {
             uri: url,
             headers: {
               'user-agent': user_agent,
-              method: 'get'
-            }
+              method: 'get',
+            },
           },
           (err, resUser, userBody) => {
-            console.log('userBody', userBody);
-            console.log('userBody.userName', userBody.userName);
-            console.log('typeof userBody', typeof userBody);
             const info = JSON.parse(userBody);
             req.session.userName = info.login;
             req.session.userId = info.id;

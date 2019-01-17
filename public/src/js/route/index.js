@@ -8,6 +8,7 @@ import { newComponent } from './hoc';
 import { Steps } from 'antd';
 import todo from './todo';
 import article from './article';
+import mockup from './mockup';
 
 const Step = Steps.Step;
 
@@ -69,6 +70,7 @@ const routes = [
       article,
     ],
   },
+  mockup,
   login,
   NotFound,
 ];

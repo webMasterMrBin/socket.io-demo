@@ -17,6 +17,8 @@ app.set('view engine', 'ejs');
 
 // 可以访问public下的静态资源
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'uploads')));
+app.use(express.static(path.join(__dirname, 'mockups')));
 
 // 开发环境日志
 app.use(logger('dev'));
@@ -26,7 +28,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 app.use(cookieParser()); // use cookie
 
 const store = new redisStore({
-  ttl: 1000 * 60 * 1,
+  ttl: 1000 * 60 * 60 * 24,
 });
 
 app.use(
@@ -37,7 +39,7 @@ app.use(
     rolling: true,
     saveUninitialized: true,
     cookie: {
-      maxAge: 1000 * 60 * 1,
+      maxAge: 1000 * 60 * 60 * 24,
       httpOnly: true,
     },
   })
@@ -100,14 +102,14 @@ app.use((req, res, next) => {
 });
 
 // 错误处理
-app.use((
-  err,
-  req,
-  res,
-  // eslint-disable-next-line
-  next) => {
-  res.status(err.status || 500);
-  res.send('ERROR');
-});
+// app.use((
+//   err,
+//   req,
+//   res,
+//   // eslint-disable-next-line
+//   next) => {
+//   res.status(err.status || 500);
+//   res.send('ERROR');
+// });
 
 module.exports = app;

@@ -14,6 +14,7 @@ import chat from './reducer/chat';
 import progress from './reducer/progress';
 import preview from './reducer/preview';
 import todo from './reducer/todo';
+import mockup from './reducer/mockup';
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from 'react-apollo';
 
@@ -45,6 +46,7 @@ const reducers = combineReducers({
   chat,
   preview,
   todo,
+  mockup,
 });
 
 const store = createStore(

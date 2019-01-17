@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
-// import connect from 'bin-react-redux-connect';
+import connect from 'bin-react-redux-connect';
 import * as todoAction from 'action/todo';
 import { Checkbox, Button, Input } from 'antd';
-import { connect } from 'react-redux';
 
 // 每个代办任务
 class Item extends React.Component {
@@ -101,8 +100,8 @@ class Index extends React.Component {
   }
 }
 
-// export default connect(Index, ['todo'], todoAction);
 export default connect(
-  state => ({ todo: { todoAll: state.todoAll } }),
-  () => todoAction
-)(Index);
+  Index,
+  ['todo'],
+  todoAction
+);
