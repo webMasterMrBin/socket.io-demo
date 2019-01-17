@@ -32,7 +32,7 @@ module.exports = {
       "allowArrowFunctions": true,
       "allowFunctions": true
     }],
-    "prettier/prettier": ["error", {"singleQuote": true, "trailingComma": "es5" }],
+    "prettier/prettier": ["off", {"singleQuote": true, "trailingComma": "es5" }],
     "no-console": "off"
   },
   "parserOptions": {
