@@ -31,6 +31,11 @@ const SIDE = [
     url: '/mockup',
     name: 'mockup',
   },
+  {
+    key: 7,
+    url: '/movie',
+    name: 'movie',
+  },
 ];
 
 export default SIDE;

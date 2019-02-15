@@ -3,6 +3,7 @@ const file = require('../controller/upload');
 const mockup = require('../controller/mockup');
 const gitToken = require('../public/src/js/gitToken');
 const request = require('request');
+const movie = require('../controller/movie');
 
 const { CLIENT_ID, CLIENT_SECRET, ACCESS_URL, USER_URL } = gitToken;
 
@@ -40,6 +41,7 @@ module.exports = app => {
   app.post('/api/mockup/upload', apiAuth, mockup.upload);
   app.post('/api/mockup/unzlib', apiAuth, mockup.unzlib);
   app.get('/api/mockup/getFileTree', apiAuth, mockup.treeList);
+  app.get('/api/getAllMovie', apiAuth, movie.getAllMovie);
   app.get('/api/callback', (req, res) => {
     const { code } = req.query;
     const user_agent = req.get('user-agent');
