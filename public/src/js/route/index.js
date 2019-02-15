@@ -9,6 +9,7 @@ import { Steps } from 'antd';
 import todo from './todo';
 import article from './article';
 import mockup from './mockup';
+import movie from './movie';
 
 const Step = Steps.Step;
 
@@ -68,6 +69,7 @@ const routes = [
       chat,
       todo,
       article,
+      movie,
     ],
   },
   mockup,
